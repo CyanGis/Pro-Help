@@ -25,7 +25,8 @@ export default function Login(props) {
                 .then((response) => {
                     console.log(response.data);
                     const user = response.data.user;
-                    // Aquí puedes manejar el usuario como necesites
+                    // Navegar al Dashboard después de un inicio de sesión exitoso
+                    navigation.navigate('Dashboard');
                 })
                 .catch((error) => {
                     console.log(error.response.data);
@@ -69,6 +70,9 @@ export default function Login(props) {
                     title={"Iniciar Sesión"}
                     onPress={handleLogin}
                 />
+                <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+                    <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
+                </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('CreateAccount')}>
                     <Text style={styles.registerText}>
                         ¿Aún no tienes una cuenta? <Text style={styles.registerLink}>Regístrate</Text>
@@ -92,6 +96,12 @@ const styles = StyleSheet.create({
         color: '#000'
     },
     registerLink: {
+        color: 'blue',
+        textDecorationLine: 'underline'
+    },
+    forgotPasswordText: {
+        marginTop: 16,
+        textAlign: 'center',
         color: 'blue',
         textDecorationLine: 'underline'
     },
