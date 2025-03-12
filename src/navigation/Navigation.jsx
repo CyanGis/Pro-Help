@@ -1,20 +1,28 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-// import SplashScreen from '../screens/SplashScreen';
-// import LoginScreen from '../screens/LoginScreen';
-import SplashScreenComponent from '../screens/SplashScreen';
-import Login from '../screens/Login';
+import Login from '../modules/auth/screens/Login';
+import CreateAccount from '../modules/auth/screens/CreacteAccount';
+import DrawerNavigation from '../Drawers/DrawerNavigationAdmin';
+import ForgotPassword from '../modules/auth/screens/ForgotPassword';
+import ResetPassword from '../modules/auth/screens/ResetPassword';
+import DrawerInvitado from '../Drawers/DrawerInvitado';
+import DrawerUsuario from '../Drawers/DrawerUsuario';
 
 const Stack = createStackNavigator();
 
 export default function Navigation() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Splash" component={SplashScreenComponent} />
+    <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={Login} />
-      </Stack.Navigator>
+        <Stack.Screen name="CreateAccount" component={CreateAccount} />
+        <Stack.Screen name="DashBoard" component={DrawerNavigation} />
+        <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} />
+        <Stack.Screen name="DashBoardInvitado" component={DrawerInvitado} />
+        <Stack.Screen name="DashBoardUsuario" component={DrawerUsuario} />
+    </Stack.Navigator>
     </NavigationContainer>
   );
 }

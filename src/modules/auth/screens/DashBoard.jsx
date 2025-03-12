@@ -1,43 +1,16 @@
-// src/modules/dashboard/screens/Dashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useNavigation } from '@react-navigation/native';
+import { Header } from 'react-native-elements';
 
-export default function Dashboard() {
+export default function DashBoard() {
     const [campaigns, setCampaigns] = useState([]);
     const isFocused = useIsFocused();
-
-    useEffect(() => {
-        // Aquí se hace la petición a la API para obtener las campañas
-        fetch('https://tuapi.com/campaigns')
-            .then((response) => response.json())
-            .then((data) => setCampaigns(data))
-            .catch((error) => console.error(error));
-    }, [isFocused]);
-
-    const renderCampaign = ({ item }) => (
-        <View style={styles.campaign}>
-            <Text style={styles.campaignTitle}>{item.title}</Text>
-            <Text style={styles.campaignDescription}>{item.description}</Text>
-        </View>
-    );
+    const navigation = useNavigation();
 
     return (
         <View style={styles.container}>
-            {campaigns.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                    <Image
-                        source={require('../../../../assets/empty.png')} // Marca de agua cuando no hay campañas
-                        style={styles.watermarkImage}
-                    />
-                </View>
-            ) : (
-                <FlatList
-                    data={campaigns}
-                    renderItem={renderCampaign}
-                    keyExtractor={(item) => item.id}
-                />
-            )}
+            <Text>Este es el DashBoard Global</Text>
         </View>
     );
 }
@@ -48,6 +21,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    header: {
+        backgroundColor: '#AFCCD0', // Color de fondo para todo el Header
     },
     emptyContainer: {
         flex: 1,

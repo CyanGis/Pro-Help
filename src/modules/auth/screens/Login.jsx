@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Image, Input, Button, Icon } from "@rneui/base";
-import { isEmpty } from "lodash";
-import axios from 'axios';
 
 export default function Login(props) {
     const { navigation } = props;
@@ -12,27 +10,23 @@ export default function Login(props) {
     const [error, setError] = useState({ email: "", password: "" });
 
     const handleLogin = () => {
-        if (isEmpty(email) || isEmpty(password)) {
-            setError({
-                email: "El correo electrónico es requerido",
-                password: "La contraseña es requerida"
-            });
-        } else {
-            setError({ email: "", password: "" });
+        const formattedEmail = email.trim().toLowerCase();
+        const formattedPassword = password.trim();
 
-            // Aquí se hace la petición a la API
-            axios.post('https://tuapi.com/login', { email, password })
-                .then((response) => {
-                    console.log(response.data);
-                    const user = response.data.user;
-                    // Navegar al Dashboard después de un inicio de sesión exitoso
-                    navigation.navigate('Dashboard');
-                })
-                .catch((error) => {
-                    console.log(error.response.data);
-                });
+        if (formattedEmail === "admin@email.com" && formattedPassword === "admin123") {
+            navigation.replace("DashBoard");
+        } else if (formattedEmail === "donante@email.com" && formattedPassword === "donante123") {
+            navigation.replace("DashBoardUsuario");
+        } else if (formattedEmail === "beneficiario@email.com" && formattedPassword === "beneficiario123") {
+            navigation.replace("DashBoardUsuario");
+        } else {
+            setError({ email: "Correo o contraseña incorrectos", password: " " });
         }
-    }
+    };
+
+    const Invitado = () => {
+        navigation.replace("DashBoardInvitado");
+    };
 
     return (
         <View style={styles.container}>
@@ -66,7 +60,7 @@ export default function Login(props) {
                     onChange={({ nativeEvent: { text } }) => setPassword(text)}
                     errorMessage={error.password}
                 />
-                <Button
+                <Button style={styles.buttonStyle}
                     title={"Iniciar Sesión"}
                     onPress={handleLogin}
                 />
@@ -78,6 +72,10 @@ export default function Login(props) {
                         ¿Aún no tienes una cuenta? <Text style={styles.registerLink}>Regístrate</Text>
                     </Text>
                 </TouchableOpacity>
+                <Button style={styles.buttonStyle}
+                    title={"Ingresar como Invitado"}
+                    onPress={Invitado}
+                />
             </View>
         </View>
     );
@@ -93,7 +91,8 @@ const styles = StyleSheet.create({
     registerText: {
         marginTop: 16,
         textAlign: 'center',
-        color: '#000'
+        color: '#000',
+        marginBottom: 16
     },
     registerLink: {
         color: 'blue',
@@ -107,13 +106,16 @@ const styles = StyleSheet.create({
     },
     inputContainer: {
         width: '100%',
-        backgroundColor: '#ffffff', // Color de fondo blanco
-        borderRadius: 8, // Bordes redondeados
-        paddingHorizontal: 10, // Espacio horizontal interno
-        paddingVertical: 5, // Espacio vertical interno
-        marginVertical: 8 // Margen vertical
+        backgroundColor: '#ffffff',
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        marginVertical: 8
     },
     input: {
-        color: '#000000' // Color de texto negro
+        color: '#000000'
+    },
+    buttonStyle: {
+        borderRadius: 8,
     }
 });

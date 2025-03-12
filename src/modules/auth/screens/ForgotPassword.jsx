@@ -1,6 +1,5 @@
-// src/modules/auth/screens/ForgotPassword.jsx
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image } from 'react-native';
 import { Input, Button } from "@rneui/base";
 import axios from 'axios';
 
@@ -28,6 +27,10 @@ export default function ForgotPassword(props) {
 
     return (
         <View style={styles.container}>
+            <Image
+                source={require('../../../../assets/logoLogin.png')}
+                style={{ width: 50, height: 50 }}
+            />
             <Text style={styles.title}>Recuperar Contraseña</Text>
             <View style={{ margin: 16 }}>
                 <Input
@@ -42,10 +45,8 @@ export default function ForgotPassword(props) {
                     title={"Enviar"}
                     onPress={handlePasswordReset}
                 />
-                {message ? <Text style={styles.message}>{message}</Text> : null}
-                <TouchableOpacity onPress={() => navigation.navigate('PhoneNumber')}>
-                    <Text style={styles.otherMethodText}>Probar otro método</Text>
-                </TouchableOpacity>
+                {/* Mostrar mensaje de error o éxito */}
+                {message !== "" && <Text style={styles.message}>{message}</Text>}
             </View>
         </View>
     );
@@ -77,7 +78,8 @@ const styles = StyleSheet.create({
     message: {
         marginTop: 16,
         textAlign: 'center',
-        color: '#000'
+        color: '#000',
+        fontSize: 16,
     },
     otherMethodText: {
         marginTop: 16,
