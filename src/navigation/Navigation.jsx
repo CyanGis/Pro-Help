@@ -7,7 +7,8 @@ import DrawerNavigation from '../Drawers/DrawerNavigationAdmin';
 import ForgotPassword from '../modules/auth/screens/ForgotPassword';
 import ResetPassword from '../modules/auth/screens/ResetPassword';
 import DrawerInvitado from '../Drawers/DrawerInvitado';
-import DrawerUsuario from '../Drawers/DrawerUsuario';
+import DrawerDonante from '../Drawers/DrawerDonante';
+import DrawerBeneficiario from '../Drawers/DrawerBeneficiario';
 
 const Stack = createStackNavigator();
 
@@ -21,7 +22,8 @@ export default function Navigation() {
         <Stack.Screen name="ForgotPassword" component={ForgotPassword} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} />
         <Stack.Screen name="DashBoardInvitado" component={DrawerInvitado} />
-        <Stack.Screen name="DashBoardUsuario" component={DrawerUsuario} />
+        <Stack.Screen name="DashBoardDonante" component={DrawerDonante} />
+        <Stack.Screen name="DashBoardBeneficiario" component={DrawerBeneficiario}/>
     </Stack.Navigator>
     </NavigationContainer>
   );

@@ -16,9 +16,9 @@ export default function Login(props) {
         if (formattedEmail === "admin@email.com" && formattedPassword === "admin123") {
             navigation.replace("DashBoard");
         } else if (formattedEmail === "donante@email.com" && formattedPassword === "donante123") {
-            navigation.replace("DashBoardUsuario");
+            navigation.replace("DashBoardDonante");
         } else if (formattedEmail === "beneficiario@email.com" && formattedPassword === "beneficiario123") {
-            navigation.replace("DashBoardUsuario");
+            navigation.replace("DashBoardBeneficiario");
         } else {
             setError({ email: "Correo o contraseña incorrectos", password: " " });
         }

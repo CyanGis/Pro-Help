@@ -1,24 +1,11 @@
-import React, { useState } from 'react';
-import { 
-  Text, View, Image, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput 
-} from 'react-native';
+import React from 'react';
+import { Text, View, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Icon } from '@rneui/base';
 
-export default function PerfilAdmin() {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [userName, setUserName] = useState("Admin Name");
-  const [newName, setNewName] = useState("");
-
-  const handleSaveName = () => {
-    if (newName.trim() !== "") {
-      setUserName(newName);
-    }
-    setModalVisible(false);
-  };
-
+export default function PerfilDonante() {
   return (
     <ScrollView style={styles.container}>
-      {/* 🔹 Imagen de Portada */}
+      {/* 🔹 Imagen de Portada con Contorno */}
       <View style={styles.coverContainer}>
         <Image 
           source={{ uri: 'https://placehold.co/600x200/png' }} 
@@ -26,7 +13,7 @@ export default function PerfilAdmin() {
         />
       </View>
 
-      {/* 🔹 Foto de Perfil */}
+      {/* 🔹 Foto de Perfil con Contorno */}
       <View style={styles.profilePicContainer}>
         <Image 
           source={{ uri: 'https://i.pravatar.cc/150' }} 
@@ -36,43 +23,15 @@ export default function PerfilAdmin() {
 
       {/* 🔹 Nombre y Rol */}
       <View style={styles.userInfo}>
-        <Text style={styles.userName}>{userName}</Text>
-        <Text style={styles.userRole}>Administrador</Text>
+        <Text style={styles.userName}>Name Donante</Text>
+        <Text style={styles.userRole}>Donante</Text>
       </View>
 
       {/* 🔹 Botón de Editar Perfil */}
-      <TouchableOpacity style={styles.editProfileButton} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity style={styles.editProfileButton}>
         <Icon name="pencil" type="material-community" color="#fff" size={20} />
         <Text style={styles.editProfileText}>Editar Perfil</Text>
       </TouchableOpacity>
-
-      {/* 🔹 Modal para Editar Nombre */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Editar Nombre</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Nuevo nombre"
-              value={newName}
-              onChangeText={setNewName}
-            />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.saveButton} onPress={handleSaveName}>
-                <Text style={styles.buttonText}>Guardar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                <Text style={styles.buttonText}>Cancelar</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
 
       {/* 🔹 Información de Donaciones */}
       <View style={styles.infoCard}>
@@ -82,7 +41,7 @@ export default function PerfilAdmin() {
         <Text style={styles.infoText}><Icon name="account-heart" type="material-community" size={16} /> Beneficiarios Ayudados: 8</Text>
       </View>
 
-      {/* 🔹 Historial de Donaciones */}
+      {/* 🔹 Historial de Donaciones con Contorno */}
       <View style={styles.infoCard}>
         <Text style={styles.sectionTitle}>Historial de Donaciones</Text>
         <View style={styles.donationItem}>
@@ -102,7 +61,7 @@ export default function PerfilAdmin() {
   );
 }
 
-// 🎨 **Estilos**
+// 🎨 **Estilos con Contornos Grises**
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -111,7 +70,7 @@ const styles = StyleSheet.create({
   coverContainer: {
     width: "100%",
     height: 200,
-    borderWidth: 2,
+    borderWidth: 2,  // Contorno gris en la imagen de portada
     borderColor: "#ccc",
     overflow: "hidden",
   },
@@ -124,7 +83,7 @@ const styles = StyleSheet.create({
     top: 140,
     left: "50%",
     transform: [{ translateX: -50 }],
-    borderWidth: 2,
+    borderWidth: 2,  // Contorno gris en la imagen de perfil
     borderColor: "#ccc",
     borderRadius: 100,
     backgroundColor: "#fff",
@@ -162,80 +121,36 @@ const styles = StyleSheet.create({
     marginLeft: 5,
     fontWeight: "bold",
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    padding: 20,
-    width: "80%",
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  input: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
-  },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
-  },
-  saveButton: {
-    flex: 1,
-    backgroundColor: "#1877f2",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    marginRight: 5,
-  },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: "#ff4b4b",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    marginLeft: 5,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
   infoCard: {
     backgroundColor: "#fff",
     padding: 15,
     marginHorizontal: 20,
     marginTop: 15,
     borderRadius: 10,
-    borderWidth: 2,
+    borderWidth: 2,  // Contorno gris en las tarjetas
     borderColor: "#ccc",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
-    elevation: 4,
+    elevation: 4, // Sombra en Android
   },
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 5,
   },
+  infoText: {
+    fontSize: 14,
+    color: "gray",
+    marginTop: 2,
+  },
   donationItem: {
     flexDirection: "row",
     alignItems: "center",
     marginTop: 5,
+    borderWidth: 2, // Contorno gris en cada donación
+    borderColor: "#ccc",
     padding: 8,
     borderRadius: 8,
   },
@@ -245,4 +160,3 @@ const styles = StyleSheet.create({
     color: "gray",
   },
 });
-

@@ -214,6 +214,7 @@ const styles = StyleSheet.create({
         color: '#000' },
     button: { 
         width: '100%', 
-        marginTop: 10 
+        marginTop: 10,
+        //backgroundColor: '#AFCCD0' 
     }
 });

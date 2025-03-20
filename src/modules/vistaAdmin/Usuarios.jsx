@@ -9,7 +9,7 @@ const Tab = createBottomTabNavigator();
 export default function Usuarios(){
     return(
             <Tab.Navigator
-            screenOptions={({ route }) => ({
+              screenOptions={({ route }) => ({
                 tabBarIcon: ({ focused, color, size }) => {
                   const { iconName, iconType } = getIconName(route.name, focused);
                   return (
@@ -17,7 +17,7 @@ export default function Usuarios(){
                   );
                 },
                 tabBarActiveTintColor: "#AFCCD0",
-                tabBarInactiveTintColor: "gray",
+                tabBarInactiveTintColor: "black",
                 headerShown: false,
               })}
             >
