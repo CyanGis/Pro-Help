@@ -5,9 +5,8 @@ import { MaterialIcons } from "@expo/vector-icons"; // Importa los iconos de Exp
 import DashBoard from "../modules/auth/screens/DashBoard";
 import Ubicaciones from "../modules/vistaAdmin/Ubicaciones";
 import PerfilAdmin from "../modules/vistaAdmin/PerfilAdmin";
-import Usuarios from "../modules/vistaAdmin/Usuarios";
-import CrearCampaings from "../modules/vistaAdmin/CrearCampaings";
-
+import Usuarios from "../modules/vistaAdmin/Historial";
+import Chat from "../modules/vistaAdmin/Chat";
 // Importar la imagen del Drawer
 const logoDrawer = require("../../assets/logoDrawer.png");
 
@@ -40,12 +39,14 @@ function DrawerNavigationAdmin() {
       initialRouteName="DashBoard"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
-        drawerStyle: { backgroundColor: "#AFCCD0", width: 250 },
-        headerStyle: { backgroundColor: "#AFCCD0" },
-        headerTintColor: "#000",
+        drawerStyle: { backgroundColor: "#FFDCCE", width: 250 },
+        headerStyle: { backgroundColor: "#896447" },
+        headerTintColor: "#FFDCCE",
+        drawerActiveTintColor: "#000", // Cambia el color del texto seleccionado a negro
+        drawerInactiveTintColor: "#444", // Color del texto no seleccionado
+        drawerActiveBackgroundColor: "#fff", // Evita el fondo azul en el seleccionado
       }}
     >
-      {/* Pantallas con iconos */}
       <Drawer.Screen
         name="DashBoard"
         component={DashBoard}
@@ -61,17 +62,17 @@ function DrawerNavigationAdmin() {
         }}
       />
       <Drawer.Screen
-        name="Crear Campañas"
-        component={CrearCampaings}
+        name="Historial"
+        component={Usuarios}
         options={{
-          drawerIcon: ({ color, size }) => <MaterialIcons name="campaign" size={size} color={color} />,
+          drawerIcon: ({ color, size }) => <MaterialIcons name="list" size={size} color={color} />,
         }}
       />
       <Drawer.Screen
-        name="Usuarios Registrados"
-        component={Usuarios}
+        name="Chat"
+        component={Chat}
         options={{
-          drawerIcon: ({ color, size }) => <MaterialIcons name="group" size={size} color={color} />,
+          drawerIcon: ({ color, size }) => <MaterialIcons name="chat" size={size} color={color} />,
         }}
       />
       <Drawer.Screen
@@ -93,8 +94,9 @@ const styles = StyleSheet.create({
     height: 150,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#AFCCD0",
+    backgroundColor: "#FFDCCE",
     padding: 20,
+    borderRadius:100,
   },
   logo: {
     width: 150, // Tamaño de la imagen

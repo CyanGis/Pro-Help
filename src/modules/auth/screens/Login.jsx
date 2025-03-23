@@ -117,5 +117,6 @@ const styles = StyleSheet.create({
     },
     buttonStyle: {
         borderRadius: 8,
+        backgroundColor: '#896447',
     }
 });

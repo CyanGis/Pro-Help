@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   logo: {
-    width: 200, // Tamaño de la imagen
+    width: 150, // Tamaño de la imagen
     height: 100,
     resizeMode: "contain", // Para que no se deforme
     marginBottom: 20,

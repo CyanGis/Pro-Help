@@ -1,248 +1,189 @@
 import React, { useState } from 'react';
-import { 
-  Text, View, Image, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput 
-} from 'react-native';
+import { Text, View, Image, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput } from 'react-native';
 import { Icon } from '@rneui/base';
 
-export default function PerfilAdmin() {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [userName, setUserName] = useState("Admin Name");
-  const [newName, setNewName] = useState("");
+export default function PerfilDonante() {
+  const [modalEditar, setModalEditar] = useState(false);
+  const [modalPassword, setModalPassword] = useState(false);
 
-  const handleSaveName = () => {
-    if (newName.trim() !== "") {
-      setUserName(newName);
-    }
-    setModalVisible(false);
-  };
+  const [nombre, setNombre] = useState("Name");
+  const [email, setEmail] = useState("email@example.com");
+  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
 
   return (
     <ScrollView style={styles.container}>
-      {/* 🔹 Imagen de Portada */}
-      <View style={styles.coverContainer}>
-        <Image 
-          source={{ uri: 'https://placehold.co/600x200/png' }} 
-          style={styles.coverImage}
-        />
+      <View style={styles.profileHeader}>
+        <Image source={{ uri: 'https://i.pravatar.cc/150' }} style={styles.profilePic} />
+        <View style={styles.userInfo}>
+          <Text style={styles.userName}>{nombre}</Text>
+          <Text style={styles.userEmail}>{email}</Text>
+          <Text style={styles.userRole}>Donante</Text>
+        </View>
       </View>
-
-      {/* 🔹 Foto de Perfil */}
-      <View style={styles.profilePicContainer}>
-        <Image 
-          source={{ uri: 'https://i.pravatar.cc/150' }} 
-          style={styles.profilePic}
-        />
-      </View>
-
-      {/* 🔹 Nombre y Rol */}
-      <View style={styles.userInfo}>
-        <Text style={styles.userName}>{userName}</Text>
-        <Text style={styles.userRole}>Administrador</Text>
-      </View>
-
-      {/* 🔹 Botón de Editar Perfil */}
-      <TouchableOpacity style={styles.editProfileButton} onPress={() => setModalVisible(true)}>
-        <Icon name="pencil" type="material-community" color="#fff" size={20} />
-        <Text style={styles.editProfileText}>Editar Perfil</Text>
+      
+      <TouchableOpacity style={styles.button} onPress={() => setModalEditar(true)}>
+        <Icon name="account-edit" type="material-community" color="#fff" size={20} />
+        <Text style={styles.buttonText}>Editar Perfil</Text>
       </TouchableOpacity>
-
-      {/* 🔹 Modal para Editar Nombre */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
+      
+      <TouchableOpacity style={styles.buttonSecondary} onPress={() => setModalPassword(true)}>
+        <Icon name="lock-reset" type="material-community" color="#fff" size={20} />
+        <Text style={styles.buttonText}>Cambiar Contraseña</Text>
+      </TouchableOpacity>
+      
+      {/* Modal para Editar Perfil */}
+      <Modal visible={modalEditar} transparent animationType="slide">
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Editar Nombre</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Nuevo nombre"
-              value={newName}
-              onChangeText={setNewName}
-            />
-            <View style={styles.modalButtons}>
-              <TouchableOpacity style={styles.saveButton} onPress={handleSaveName}>
-                <Text style={styles.buttonText}>Guardar</Text>
+            <Text style={styles.modalTitle}>Editar Perfil</Text>
+            <TextInput style={styles.input} value={nombre} onChangeText={setNombre} placeholder="Nombre" />
+            
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={styles.saveButton} onPress={() => setModalEditar(false)}>
+                <Text style={styles.saveButtonText}>Guardar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
-                <Text style={styles.buttonText}>Cancelar</Text>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setModalEditar(false)}>
+                <Text style={styles.closeButtonText}>Cancelar</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
-
-      {/* 🔹 Información de Donaciones */}
-      <View style={styles.infoCard}>
-        <Text style={styles.sectionTitle}>Donaciones</Text>
-        <Text style={styles.infoText}><Icon name="hand-heart" type="material-community" size={16} /> Donaciones Realizadas: 15</Text>
-        <Text style={styles.infoText}><Icon name="cash-multiple" type="material-community" size={16} /> Total Donado: $5,000 MXN</Text>
-        <Text style={styles.infoText}><Icon name="account-heart" type="material-community" size={16} /> Beneficiarios Ayudados: 8</Text>
-      </View>
-
-      {/* 🔹 Historial de Donaciones */}
-      <View style={styles.infoCard}>
-        <Text style={styles.sectionTitle}>Historial de Donaciones</Text>
-        <View style={styles.donationItem}>
-          <Icon name="heart" type="material-community" color="red" size={16} />
-          <Text style={styles.donationText}>$500 MXN - Fundación Niños Felices</Text>
+      
+      {/* Modal para Cambiar Contraseña */}
+      <Modal visible={modalPassword} transparent animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Cambiar Contraseña</Text>
+            <TextInput style={styles.input} secureTextEntry value={password} onChangeText={setPassword} placeholder="Contraseña Actual" />
+            <TextInput style={styles.input} secureTextEntry value={newPassword} onChangeText={setNewPassword} placeholder="Nueva Contraseña" />
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={styles.saveButton} onPress={() => setModalPassword(false)}>
+                <Text style={styles.saveButtonText}>Actualizar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setModalPassword(false)}>
+                <Text style={styles.closeButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-        <View style={styles.donationItem}>
-          <Icon name="heart" type="material-community" color="red" size={16} />
-          <Text style={styles.donationText}>$1,000 MXN - Comida para Todos</Text>
-        </View>
-        <View style={styles.donationItem}>
-          <Icon name="heart" type="material-community" color="red" size={16} />
-          <Text style={styles.donationText}>$200 MXN - Apoyo Escolar</Text>
-        </View>
-      </View>
+      </Modal>
     </ScrollView>
   );
 }
 
-// 🎨 **Estilos**
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f4f4f4",
+  container: 
+  { flex: 1, 
+    backgroundColor: "#f4f4f4", 
+    padding: 20 
   },
-  coverContainer: {
-    width: "100%",
-    height: 200,
-    borderWidth: 2,
-    borderColor: "#ccc",
-    overflow: "hidden",
+  profileHeader: 
+  { alignItems: "center", 
+    marginTop: 30 
   },
-  coverImage: {
-    width: "100%",
-    height: "100%",
+  profilePic: { 
+    width: 120, 
+    height: 120, 
+    borderRadius: 60,
+    borderWidth: 3, 
+    borderColor: "#896447" 
   },
-  profilePicContainer: {
-    position: "absolute",
-    top: 140,
-    left: "50%",
-    transform: [{ translateX: -50 }],
-    borderWidth: 2,
-    borderColor: "#ccc",
-    borderRadius: 100,
-    backgroundColor: "#fff",
-    padding: 4,
+  userInfo: { 
+    alignItems: "center", 
+    marginTop: 10 
   },
-  profilePic: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+  userName: { 
+    fontSize: 22, 
+    fontWeight: "bold" 
   },
-  userInfo: {
-    alignItems: "center",
-    marginTop: 50,
+  userEmail: { 
+    fontSize: 16, 
+    color: "gray" 
   },
-  userName: {
-    fontSize: 22,
-    fontWeight: "bold",
+  userRole: { 
+    fontSize: 14, 
+    color: "#666", 
+    marginTop: 5 
   },
-  userRole: {
-    fontSize: 14,
-    color: "gray",
+  button: { 
+    flexDirection: "row", 
+    alignItems: "center", 
+    backgroundColor: "#000", 
+    padding: 12, 
+    borderRadius: 8, 
+    marginTop: 15, 
+    justifyContent: "center" 
   },
-  editProfileButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#1877f2",
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 20,
-    alignSelf: "center",
-    marginTop: 10,
+  buttonSecondary: { 
+    flexDirection: "row", 
+    alignItems: "center", 
+    backgroundColor: "#000", 
+    padding: 12, 
+    borderRadius: 8, 
+    marginTop: 10, 
+    justifyContent: "center" 
   },
-  editProfileText: {
-    color: "#fff",
-    marginLeft: 5,
-    fontWeight: "bold",
+  buttonText: { 
+    color: "#fff", 
+    marginLeft: 8, 
+    fontWeight: "bold" 
   },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  modalContainer: { 
+    flex: 1, 
+    justifyContent: "center", 
+    alignItems: "center", 
+    backgroundColor: "rgba(0,0,0,0.5)" 
   },
-  modalContent: {
-    backgroundColor: "#fff",
-    padding: 20,
-    width: "80%",
-    borderRadius: 10,
-    alignItems: "center",
+  modalContent: 
+  { width: "80%", 
+    backgroundColor: "#fff", 
+    padding: 20, 
+    borderRadius: 10, 
+    alignItems: "center" 
   },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
+  modalTitle: { 
+    fontSize: 18, 
+    fontWeight: "bold", 
+    marginBottom: 10 
   },
-  input: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 5,
-    marginBottom: 10,
+  input: { 
+    width: "100%", 
+    padding: 10, 
+    borderWidth: 1, 
+    borderColor: "#ccc", 
+    borderRadius: 8, 
+    marginBottom: 10 
   },
-  modalButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: "100%",
+  buttonRow: { 
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    width: "100%", 
+    marginTop: 10 
   },
-  saveButton: {
-    flex: 1,
-    backgroundColor: "#1877f2",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    marginRight: 5,
+  saveButton: { 
+    backgroundColor: "#000", 
+    padding: 10, 
+    borderRadius: 8, 
+    flex: 1, 
+    marginRight: 5, 
+    alignItems: "center" 
   },
-  cancelButton: {
-    flex: 1,
-    backgroundColor: "#ff4b4b",
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    marginLeft: 5,
+  saveButtonText: { 
+    color: "#fff", 
+    fontWeight: "bold" 
   },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
+  closeButton: { 
+    backgroundColor: "#FF4B4B", 
+    padding: 10, 
+    borderRadius: 8, 
+    flex: 1, 
+    marginLeft: 5, 
+    alignItems: "center" 
   },
-  infoCard: {
-    backgroundColor: "#fff",
-    padding: 15,
-    marginHorizontal: 20,
-    marginTop: 15,
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "#ccc",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-    elevation: 4,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 5,
-  },
-  donationItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 5,
-    padding: 8,
-    borderRadius: 8,
-  },
-  donationText: {
-    fontSize: 14,
-    marginLeft: 5,
-    color: "gray",
+  closeButtonText: { 
+    color: "#fff", 
+    fontWeight: "bold" 
   },
 });
-
