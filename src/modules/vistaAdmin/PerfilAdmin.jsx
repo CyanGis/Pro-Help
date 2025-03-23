@@ -18,7 +18,7 @@ export default function PerfilAdmin() {
         <View style={styles.userInfo}>
           <Text style={styles.userName}>{nombre}</Text>
           <Text style={styles.userEmail}>{email}</Text>
-          <Text style={styles.userRole}>Donante</Text>
+          <Text style={styles.userRole}>Admin</Text>
         </View>
       </View>
       

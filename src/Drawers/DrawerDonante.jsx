@@ -5,6 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons'; // Importa los iconos de Exp
 import DashBoard from '../modules/auth/screens/DashBoard';
 import Ubicaciones from '../modules/vistaAdmin/Ubicaciones';
 import PerfilDonante from '../VistaUsuario/PerfilDonante';
+import ChatUsuario from '../VistaUsuario/ChatUsuario';
 
 const Drawer = createDrawerNavigator();
 
@@ -61,6 +62,13 @@ function DrawerDonante(props) {
             <MaterialIcons name="person" size={size} color={color} />
           ),
         }}
+      />
+      <Drawer.Screen
+        name="Chat"
+        component={ChatUsuario}
+        options={{
+            drawerIcon: ({ color, size }) => <MaterialIcons name="chat" size={size} color={color} />,
+          }}
       />
       <Drawer.Screen 
         name="Ubicaciones" 

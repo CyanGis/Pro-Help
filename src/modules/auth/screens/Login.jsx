@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { Image, Input, Button, Icon } from "@rneui/base";
+import axios from 'axios';
+import UserService from "../../../Kernel/Service";
 
 export default function Login({ navigation }) {
     const [showPassword, setShowPassword] = useState(true);
@@ -13,10 +15,11 @@ export default function Login({ navigation }) {
         return regex.test(email);
     };
 
-    const handleLogin = () => {
+    const handleLogin = async() => {
+
         const formattedEmail = email.trim().toLowerCase();
         const formattedPassword = password.trim();
-
+    
         if (!formattedEmail || !formattedPassword) {
             setError({
                 email: !formattedEmail ? "El correo es obligatorio" : "",
@@ -24,34 +27,22 @@ export default function Login({ navigation }) {
             });
             return;
         }
-
+    
         if (!validateEmail(formattedEmail)) {
             setError({ email: "Ingresa un correo válido", password: "" });
             return;
         }
-
-        let route = "";
-        switch (formattedEmail) {
-            case "admin@email.com":
-                route = "DashBoard";
-                break;
-            case "donante@email.com":
-                route = "DashBoardDonante";
-                break;
-            case "beneficiario@email.com":
-                route = "DashBoardBeneficiario";
-                break;
-            default:
-                setError({ email: "Correo o contraseña incorrectos", password: " " });
-                return;
+        try {
+            const data = await UserService.login(email, password);
+            console.log(data);
+            if (data.role === 'ADMIN') {
+                navigation.replace('DashBoard');
+            } else {
+                // Handle other roles if necessary
+            }
+        } catch (err) {
+            console.error(err);
         }
-
-        if (formattedPassword !== "admin123" && formattedPassword !== "donante123" && formattedPassword !== "beneficiario123") {
-            setError({ email: "Correo o contraseña incorrectos", password: " " });
-            return;
-        }
-
-        navigation.replace(route);
     };
 
     return (
