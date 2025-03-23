@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Text, View, Image, StyleSheet, TouchableOpacity, ScrollView, Modal, TextInput } from 'react-native';
 import { Icon } from '@rneui/base';
 
-export default function PerfilDonante() {
+export default function PerfilAdmin() {
   const [modalEditar, setModalEditar] = useState(false);
   const [modalPassword, setModalPassword] = useState(false);
 

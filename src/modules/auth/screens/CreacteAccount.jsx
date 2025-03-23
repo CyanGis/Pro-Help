@@ -107,17 +107,6 @@ export default function CreateAccount({ navigation }) {
                             </Picker>
                         </View>
 
-                        <View style={styles.pickerWrapper}>
-                            <Text style={styles.label}>Rol:</Text>
-                            <Picker
-                                selectedValue={role}
-                                style={styles.picker}
-                                onValueChange={(itemValue) => setRole(itemValue)}
-                            >
-                                <Picker.Item label="Donante" value="donante" />
-                                <Picker.Item label="Beneficiario" value="beneficiario" />
-                            </Picker>
-                        </View>
                     </View>
 
                     <Input
@@ -201,7 +190,9 @@ const styles = StyleSheet.create({
         justifyContent: "space-between" 
     },
     pickerWrapper: { 
-        width: '48%' 
+        flex:1,
+        width: '70%',
+        height: '20%',
     },
     picker: { 
         backgroundColor: '#f2f2f2', 
@@ -212,9 +203,9 @@ const styles = StyleSheet.create({
     },
     input: { 
         color: '#000' },
-    button: { 
-        width: '100%', 
-        marginTop: 10,
-        //backgroundColor: '#AFCCD0' 
-    }
+    button: {
+        borderRadius: 8,
+        backgroundColor: '#896447',
+        marginVertical: 10
+    },
 });

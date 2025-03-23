@@ -1,52 +1,54 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, Alert } from 'react-native';
 import { Input, Button } from "@rneui/base";
-import axios from 'axios';
 
-export default function ForgotPassword(props) {
-    const { navigation } = props;
+export default function ForgotPassword({ navigation }) {
     const [email, setEmail] = useState("");
-    const [message, setMessage] = useState("");
+    const [error, setError] = useState("");
+
+    const validateEmail = (email) => {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    };
 
     const handlePasswordReset = () => {
-        if (email === "") {
-            setMessage("El correo electrónico es requerido");
-        } else {
-            // Aquí se hace la petición a la API
-            axios.post('https://tuapi.com/forgot-password', { email })
-                .then((response) => {
-                    console.log(response.data);
-                    setMessage("Se ha enviado un enlace para restablecer la contraseña a tu correo electrónico.");
-                })
-                .catch((error) => {
-                    console.log(error.response.data);
-                    setMessage("Error al enviar el enlace. Inténtalo de nuevo.");
-                });
+        if (!email.trim()) {
+            setError("El correo electrónico es requerido");
+            return;
         }
+
+        if (!validateEmail(email)) {
+            setError("Ingresa un correo válido");
+            return;
+        }
+
+        setError("");
+
+        Alert.alert(
+            "Recuperación de contraseña",
+            "Se ha enviado un enlace para restablecer la contraseña a tu correo.",
+            [{ text: "OK", onPress: () => navigation.goBack() }]
+        );
     };
 
     return (
         <View style={styles.container}>
-            <Image
-                source={require('../../../../assets/logoLogin.png')}
-                style={{ width: 50, height: 50 }}
-            />
+            <Image source={require('../../../../assets/logoLogin.png')} style={styles.logo} />
             <Text style={styles.title}>Recuperar Contraseña</Text>
-            <View style={{ margin: 16 }}>
+            <View style={styles.formContainer}>
                 <Input
                     placeholder="Correo electrónico"
                     label="Correo Electrónico"
                     keyboardType="email-address"
+                    autoCapitalize="none"
                     inputContainerStyle={styles.inputContainer}
-                    inputStyle={styles.input}
-                    onChange={({ nativeEvent: { text } }) => setEmail(text)}
+                    onChangeText={(text) => {
+                        setEmail(text);
+                        setError(""); // Limpia el error al escribir
+                    }}
+                    errorMessage={error}
                 />
-                <Button
-                    title={"Enviar"}
-                    onPress={handlePasswordReset}
-                />
-                {/* Mostrar mensaje de error o éxito */}
-                {message !== "" && <Text style={styles.message}>{message}</Text>}
+                <Button title="Enviar" onPress={handlePasswordReset} buttonStyle={styles.button} />
             </View>
         </View>
     );
@@ -57,34 +59,33 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#AFCCD0'
+        backgroundColor: '#AFCCD0',
+        padding: 20
+    },
+    logo: {
+        width: 80,
+        height: 80,
+        marginBottom: 20
     },
     title: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: 'bold',
+        color: '#333',
         marginBottom: 16
+    },
+    formContainer: {
+        width: '100%',
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 20,
+        elevation: 5
     },
     inputContainer: {
         width: '100%',
-        backgroundColor: '#ffffff', // Color de fondo blanco
-        borderRadius: 8, // Bordes redondeados
-        paddingHorizontal: 10, // Espacio horizontal interno
-        paddingVertical: 5, // Espacio vertical interno
-        marginVertical: 8 // Margen vertical
     },
-    input: {
-        color: '#000000' // Color de texto negro
-    },
-    message: {
-        marginTop: 16,
-        textAlign: 'center',
-        color: '#000',
-        fontSize: 16,
-    },
-    otherMethodText: {
-        marginTop: 16,
-        textAlign: 'center',
-        color: 'blue',
-        textDecorationLine: 'underline'
+    button: {
+        marginTop: 10,
+        backgroundColor: '#896447',
+        borderRadius: 8
     }
 });

@@ -35,9 +35,12 @@ export default function DrawerInvitado() {
       initialRouteName="DashBoard"
       drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
-        drawerStyle: { backgroundColor: "#AFCCD0", width: 250 },
-        headerStyle: { backgroundColor: "#AFCCD0" },
-        headerTintColor: "#000",
+        drawerStyle: { backgroundColor: "#FFDCCE", width: 250 },
+        headerStyle: { backgroundColor: "#896447" },
+        headerTintColor: "#FFDCCE",
+        drawerActiveTintColor: "#000", // Cambia el color del texto seleccionado a negro
+        drawerInactiveTintColor: "#444", // Color del texto no seleccionado
+        drawerActiveBackgroundColor: "#fff", // Evita el fondo azul en el seleccionado
       }}
     >
       {/* Pantallas con iconos */}
@@ -65,7 +68,7 @@ const styles = StyleSheet.create({
     height: 150,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#AFCCD0",
+    backgroundColor: "#FFDCCE",
     padding: 20,
   },
   logo: {
