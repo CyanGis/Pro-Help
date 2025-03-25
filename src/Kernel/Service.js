@@ -1,7 +1,7 @@
 import axios from "axios";
 
 class UserService {
-    static BASE_URL = "http://192.168.0.7:8080"
+    static BASE_URL = "http://192.168.0.216:8080"
 
     static async login(email, password) {
         try {
@@ -38,13 +38,25 @@ class UserService {
     }
 
 
-    static async getYourProfile(token) {
+    static async getYourProfile(token) {//obtiene el perfil del usuario logueado con el token que se le pasa como parametro
         try {
             const response = await axios.get(`${UserService.BASE_URL}/api/adminuser/get-profile`,
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 })
             return response.data;
+        } catch (err) {
+            throw err;
+        }
+    }
+
+    static async getAllCampaigns (token) {
+        try {
+            const response = await axios.get(`${UserService.BASE_URL}/api/campaign`,
+                    {
+                        headers: { Authorization: `Bearer ${token}`},
+                    })
+                return response.data.data;
         } catch (err) {
             throw err;
         }
