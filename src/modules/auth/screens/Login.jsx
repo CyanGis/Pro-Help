@@ -1,49 +1,76 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Image, Input, Button, Icon } from "@rneui/base";
-import axios from 'axios';
-import UserService from "../../../Kernel/Service";
+    import React, { useEffect, useState } from "react";
+    import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+    import { Image, Input, Button, Icon } from "@rneui/base";
+    import UserService from "../../../Kernel/Service";
+    import AsyncStorage from "@react-native-async-storage/async-storage";
+    import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+    import { authInstance } from "../../../Kernel/firebase.config"; 
+    export default function Login({ navigation }) {
+        const [showPassword, setShowPassword] = useState(true);
+        const [email, setEmail] = useState("");
+        const [password, setPassword] = useState("");
+        const [error, setError] = useState({ email: "", password: "" });
+        {/* Guardar los datos dentro del async storage */}
+        useEffect(() => {
+            ( async () => {
+                await AsyncStorage.removeItem("token");
+            })();
+        })
 
-export default function Login({ navigation }) {
-    const [showPassword, setShowPassword] = useState(true);
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState({ email: "", password: "" });
-
-    const validateEmail = (email) => {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
-    };
-
-    const handleLogin = async() => {
-
-        const formattedEmail = email.trim().toLowerCase();
-        const formattedPassword = password.trim();
-    
-        if (!formattedEmail || !formattedPassword) {
-            setError({
-                email: !formattedEmail ? "El correo es obligatorio" : "",
-                password: !formattedPassword ? "La contraseña es obligatoria" : ""
-            });
-            return;
-        }
-    
-        if (!validateEmail(formattedEmail)) {
-            setError({ email: "Ingresa un correo válido", password: "" });
-            return;
-        }
-        try {
-            const data = await UserService.login(email, password);
-            console.log(data);
-            if (data.role === 'ADMIN') {
-                navigation.replace('DashBoard');
-            } else {
-                // Handle other roles if necessary
+        const saveData = async (data) => {
+            try {
+            await AsyncStorage.setItem('token', data);
+            console.log('Data saved successfully');
+            } catch (e) {
+            console.log('Failed to save data:', e);
             }
-        } catch (err) {
-            console.error(err);
-        }
-    };
+        };
+
+        const validateEmail = (email) => {
+            const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return regex.test(email);
+        };
+
+        const handleLogin = async () => {
+            const formattedEmail = email.trim().toLowerCase();
+            const formattedPassword = password.trim();
+    
+            if (!formattedEmail || !formattedPassword) {
+                setError({
+                    email: !formattedEmail ? "El correo es obligatorio" : "",
+                    password: !formattedPassword ? "La contraseña es obligatoria" : ""
+                });
+                return;
+            }
+            if (!validateEmail(formattedEmail)) {
+                setError({ email: "Ingresa un correo válido", password: "" });
+                return;
+            }
+            try {
+                const data = await UserService.login(formattedEmail, formattedPassword);
+    
+                if (data.token) {
+                    saveData(data.token);
+                    const firebaseTokenData = await UserService.getFirebaseToken(data.token, formattedPassword);
+    
+                    if (firebaseTokenData.firebaseToken) {
+                        await signInWithEmailAndPassword(authInstance, formattedEmail, formattedPassword);
+                        console.log("Usuario autenticado con Firebase");
+                    }
+                }
+                if (data.role === 'ADMIN') {
+                    navigation.replace('DashBoard');
+                } else {
+                    console.log("Usuario no es ADMIN");
+                    Alert.alert("Acceso Denegado", "Este usuario no tiene permisos de administrador.");
+                }
+    
+            } catch (err) {
+                console.error("Error durante el login: ", err);
+                setError({ email: "", password: "Error en el inicio de sesión" });
+            }
+        };
+
 
     return (
         <View style={styles.container}>

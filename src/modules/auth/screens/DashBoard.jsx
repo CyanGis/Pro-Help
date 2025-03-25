@@ -2,11 +2,42 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, FlatList } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { Header } from 'react-native-elements';
+import UserService from '../../../Kernel/Service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function DashBoard() {
     const [campaigns, setCampaigns] = useState([]);
     const isFocused = useIsFocused();
     const navigation = useNavigation();
+
+    const getData = async () => {
+        try {
+           
+            const value = await AsyncStorage.getItem('token');
+            
+            if (value !== null) {
+                console.log("Token obtenido: ", value);
+                const profile = await UserService.getYourProfile(value);
+                if (profile) {
+                    const existingProfile = await AsyncStorage.getItem('profile');
+                    if (existingProfile !== JSON.stringify(profile)) {
+                        await AsyncStorage.setItem("profile", JSON.stringify(profile));
+                        console.log("Perfil actualizado:", profile);
+                    } else {
+                        console.log("El perfil ya está guardado y no se actualizó.");
+                    }
+                }
+            } else {
+                console.log("No se encontró el dato en AsyncStorage");
+            }
+        } catch (error) {
+            console.error("Error al obtener el dato: ", error);
+        }
+    };
+    useEffect(() => {
+        getData();
+    },[]);
+
 
     return (
         <View style={styles.container}>
