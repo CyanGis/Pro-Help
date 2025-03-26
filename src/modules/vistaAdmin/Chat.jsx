@@ -30,7 +30,7 @@ const ChatScreen = () => {
     if (!email) return;
     const fetchContacts = async () => {
       try {
-        const response = await axios.get(`http://192.168.0.7:8080/api/${email}/contacts`);
+        const response = await axios.get(`http://192.168.0.216:8080/api/${email}/contacts`);
         setContacts(response.data || []);
       } catch (error) {
         console.error('Error al cargar los contactos:', error);
@@ -149,6 +149,11 @@ const styles = StyleSheet.create({
     padding: 15,
     marginVertical: 5,
     borderRadius: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
   contactTextContainer: { 
     flex: 1 
@@ -203,7 +208,12 @@ const styles = StyleSheet.create({
     marginBottom: 10, 
     padding: 12, 
     borderRadius: 20, 
-    maxWidth: '80%' 
+    maxWidth: '80%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
   sentMessage: { 
     alignSelf: 'flex-end', 

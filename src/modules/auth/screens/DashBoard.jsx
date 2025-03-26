@@ -75,15 +75,6 @@ export default function DashBoard() {
                 } catch (error) {
                     console.error("Error al obtener campañas: ", error);
                 }
-                /*if (profile) {
-                    const existingProfile = await AsyncStorage.getItem('profile');
-                    if (existingProfile !== JSON.stringify(profile)) {
-                        await AsyncStorage.setItem("profile", JSON.stringify(profile));
-                        console.log("Perfil actualizado:", profile);
-                    } else {
-                        console.log("El perfil ya está guardado y no se actualizó.");
-                    }
-                }*/
             } else {
                 console.log("No se encontró el dato en AsyncStorage");
             }
