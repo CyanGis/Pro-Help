@@ -7,6 +7,7 @@ import Ubicaciones from "../modules/vistaAdmin/Ubicaciones";
 import PerfilAdmin from "../modules/vistaAdmin/PerfilAdmin";
 import Usuarios from "../modules/vistaAdmin/Historial";
 import Chat from "../modules/vistaAdmin/Chat";
+import ViewCampaign from "../modules/auth/screens/ViewCampaign";
 // Importar la imagen del Drawer
 const logoDrawer = require("../../assets/logoDrawer.png");
 
@@ -82,6 +83,14 @@ function DrawerNavigationAdmin() {
           drawerIcon: ({ color, size }) => <MaterialIcons name="place" size={size} color={color} />,
         }}
       />
+        <Drawer.Screen
+        name="ViewCampaign"
+        component={ViewCampaign}
+        options={{
+            drawerLabel: () => null, // Oculta del menú del drawer
+            drawerItemStyle: { height: 0 }, // Oculta completamente
+        }}
+    />
     </Drawer.Navigator>
   );
 }
