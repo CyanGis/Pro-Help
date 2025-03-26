@@ -116,7 +116,10 @@ export default function DashBoard() {
         <View style={styles.container}>
             {campaigns.length === 0 ? (
                 <View style={styles.emptyContainer}>
-                    <Text>No hay campañas disponibles.</Text>
+                    <Image
+                        source={require('../../../../assets/empty.png')}
+                        style={styles.emptyImage}
+                    />
                 </View>
             ) : (
                 <FlatList
