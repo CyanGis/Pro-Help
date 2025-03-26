@@ -4,7 +4,6 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import { Header } from 'react-native-elements';
 import UserService from '../../../Kernel/Service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 const imagenes = {
     '/img-camp/img-1.png': require("../../../../assets/img-camp/img-1.png"),
     '/img-camp/img-2.png': require("../../../../assets/img-camp/img-2.png"),
@@ -75,15 +74,6 @@ export default function DashBoard() {
                 } catch (error) {
                     console.error("Error al obtener campañas: ", error);
                 }
-                /*if (profile) {
-                    const existingProfile = await AsyncStorage.getItem('profile');
-                    if (existingProfile !== JSON.stringify(profile)) {
-                        await AsyncStorage.setItem("profile", JSON.stringify(profile));
-                        console.log("Perfil actualizado:", profile);
-                    } else {
-                        console.log("El perfil ya está guardado y no se actualizó.");
-                    }
-                }*/
             } else {
                 console.log("No se encontró el dato en AsyncStorage");
             }
@@ -130,6 +120,7 @@ export default function DashBoard() {
                 </View>
             ) : (
                 <FlatList
+                    showsHorizontalScrollIndicator={false}
                     data={campaigns}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={renderItem}
@@ -142,8 +133,7 @@ export default function DashBoard() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#ffffff',
-        padding: 16,
+        backgroundColor: '#e7e7e7',
     },
     emptyContainer: {
         flex: 1,
@@ -155,6 +145,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 10,
         marginBottom: 10,
+        //borderWidth:1|'black',
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.3,
@@ -163,18 +154,18 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: 150,
+        height: 200,
         borderRadius: 10,
     },
     infoContainer: {
         padding: 10,
     },
     title: {
-        fontSize: 20,
+        fontSize: 30,
         fontWeight: 'bold',
     },
     description: {
-        fontSize: 14,
+        fontSize: 18,
         marginTop: 5,
     },
     category: {
@@ -187,6 +178,12 @@ const styles = StyleSheet.create({
         padding: 10,
         marginBottom: 10,
         borderRadius: 10,
+        //borderWidth:1|'black',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
     },
     titleAlt: {
         fontSize: 18,
