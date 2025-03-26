@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
+import React, { useState, useEffect, useRef } from 'react';
+import { View, Text, TextInput, TouchableOpacity, FlatList, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Keyboard, Image } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../Kernel/firebase.config';
+import { Ionicons } from '@expo/vector-icons';
+import { TouchableWithoutFeedback} from 'react-native';
 
 const ChatScreen = () => {
   const [activeChat, setActiveChat] = useState(null);
@@ -11,15 +13,14 @@ const ChatScreen = () => {
   const [newMessage, setNewMessage] = useState('');
   const [contacts, setContacts] = useState([]);
   const [email, setEmail] = useState('');
-  const [keyboardVisible, setKeyboardVisible] = useState(false);
+  const scrollViewRef = useRef();
 
   useEffect(() => {
     const fetchProfile = async () => {
       const profile = await AsyncStorage.getItem('profile');
       if (profile) {
         const parsedProfile = JSON.parse(profile);
-        const { email } = parsedProfile.user;
-        setEmail(email);
+        setEmail(parsedProfile.user.email);
       }
     };
     fetchProfile();
@@ -29,7 +30,7 @@ const ChatScreen = () => {
     if (!email) return;
     const fetchContacts = async () => {
       try {
-        const response = await axios.get(`http://192.168.0.216:8080/api/${email}/contacts`);
+        const response = await axios.get(`http://192.168.0.7:8080/api/${email}/contacts`);
         setContacts(response.data || []);
       } catch (error) {
         console.error('Error al cargar los contactos:', error);
@@ -40,20 +41,19 @@ const ChatScreen = () => {
 
   useEffect(() => {
     if (!activeChat) return;
-
     const chatId = getChatId(email, activeChat.email);
     const q = query(collection(db, `chats/${chatId}/messages`), orderBy('timestamp'));
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const messagesArray = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setMessages(messagesArray);
+      setMessages(snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
     });
 
     return () => unsubscribe();
   }, [activeChat, email]);
+
+  useEffect(() => {
+    scrollViewRef.current?.scrollToEnd({ animated: true });
+  }, [messages]);
 
   const handleSendMessage = async () => {
     if (newMessage.trim() === '' || !activeChat) return;
@@ -69,56 +69,46 @@ const ChatScreen = () => {
     try {
       await addDoc(collection(db, `chats/${chatId}/messages`), message);
       setNewMessage('');
-      Keyboard.dismiss();  // Ocultar el teclado después de enviar el mensaje
+      Keyboard.dismiss();
     } catch (error) {
       console.error('Error al enviar el mensaje:', error);
     }
   };
 
-  const getChatId = (userEmail, recipientEmail) => {
-    return userEmail < recipientEmail
-      ? `${userEmail}_to_${recipientEmail}`
-      : `${recipientEmail}_to_${userEmail}`;
-  };
-
-  const renderMessage = (message, index) => (
-    <View key={index} style={[styles.messageContainer, message.sender === email ? styles.sentMessage : styles.receivedMessage]}>
-      <Text style={styles.messageText}>{message.text}</Text>
-    </View>
-  );
-
-  const renderContactItem = ({ item }) => (
-    <TouchableOpacity style={styles.contactItem} onPress={() => setActiveChat(item)}>
-      <Text style={styles.contactName}>{item.nombre}</Text>
-    </TouchableOpacity>
-  );
+  const getChatId = (userEmail, recipientEmail) =>
+    userEmail < recipientEmail ? `${userEmail}_to_${recipientEmail}` : `${recipientEmail}_to_${userEmail}`;
 
   return (
     <View style={styles.container}>
-      {/* Si no hay chat activo, mostramos la lista de contactos */}
       {!activeChat ? (
         <FlatList
           data={contacts}
-          renderItem={renderContactItem}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.contactItem} onPress={() => setActiveChat(item)}>
+              <View style={styles.contactTextContainer}>
+                <Text style={styles.contactName}>{item.nombre}</Text>
+              </View>
+            </TouchableOpacity>
+          )}
           keyExtractor={(item) => item.email}
           style={styles.contactList}
         />
       ) : (
-        // Si hay un chat activo, mostramos los mensajes
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{ flex: 1 }}
-        >
+        <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
           <View style={styles.chatContainer}>
             <View style={styles.header}>
               <TouchableOpacity onPress={() => setActiveChat(null)} style={styles.backButton}>
-                <Text style={styles.backButtonText}>←</Text>
+                <Ionicons name="chevron-back" size={20} color="white" />
               </TouchableOpacity>
               <Text style={styles.headerText}>{activeChat.nombre}</Text>
             </View>
 
-            <ScrollView style={styles.messagesContainer}>
-              {messages.map(renderMessage)}
+            <ScrollView ref={scrollViewRef} style={styles.messagesContainer}>
+              {messages.map((message, index) => (
+                <View key={index} style={[styles.messageContainer, message.sender === email ? styles.sentMessage : styles.receivedMessage]}>
+                  <Text style={styles.messageText}>{message.text}</Text>
+                </View>
+              ))}
             </ScrollView>
 
             <View style={styles.inputContainer}>
@@ -126,11 +116,11 @@ const ChatScreen = () => {
                 value={newMessage}
                 onChangeText={setNewMessage}
                 placeholder="Escribe un mensaje..."
-                placeholderTextColor="#bbb"
+                placeholderTextColor="#9F9F9F"
                 style={styles.input}
               />
               <TouchableOpacity onPress={handleSendMessage} style={styles.sendButton}>
-                <Text style={styles.sendButtonText}>➤</Text>
+                <Ionicons name="send" size={20} color="white" />
               </TouchableOpacity>
             </View>
           </View>
@@ -141,105 +131,112 @@ const ChatScreen = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#121212',
+  container: { 
+    flex: 1, 
+    backgroundColor: '#e7e7e7' 
   },
-  contactList: {
-    flex: 1,
-    paddingTop: 10,
+  contactList: { 
+    flex: 1, 
+    paddingTop: 10 
   },
   contactItem: {
-    padding: 15,
-    backgroundColor: '#1E1E1E',
-    marginBottom: 5,
-    borderRadius: 8,
     flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: '#AFCCD0',
+    marginHorizontal: 10,
+    borderWidth: 1,
+    borderColor: 'gray',
+    padding: 15,
+    marginVertical: 5,
+    borderRadius: 8,
   },
-  contactName: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
+  contactTextContainer: { 
+    flex: 1 
   },
-  chatContainer: {
-    flex: 1,
-    backgroundColor: '#121212',
-    borderTopWidth: 1,
-    borderTopColor: '#444',
-    paddingBottom: 10,
+  contactName: { 
+    color: 'white', 
+    fontSize: 18, 
+    fontWeight: 'bold' 
+  },
+  contactStatus: { 
+    color: 'gray', 
+    fontSize: 14 
+  },
+  statusIndicator: { 
+    width: 12, 
+    height: 12, 
+    borderRadius: 6, 
+    marginLeft: 10 
+  },
+  chatContainer: { 
+    flex: 1, 
+    backgroundColor: '#181818', 
+    paddingBottom: 0
   },
   header: {
-    backgroundColor: '#1E1E1E',
-    padding: 10,
-    alignItems: 'center',
-    flexDirection: 'row',
-    
-  },
-  backButton: {
-    padding: 10,
-  },
-  backButtonText: {
-    fontSize: 21,
-    color: 'white',
-  },
-  headerText: {
-    color: 'white',
-    fontSize: 20,
-    fontWeight: 'bold',
-    margin:'auto'
-  },
-  messagesContainer: {
-    flex: 1,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-  },
-  messageContainer: {
-    marginBottom: 10,
-    padding: 10,
-    borderRadius: 20,
-    maxWidth: '80%',
-  },
-  sentMessage: {
-    alignSelf: 'flex-end',
-    backgroundColor: '#4CAF50',
-  },
-  receivedMessage: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#333',
-  },
-  messageText: {
-    fontSize: 16,
-    color: 'white',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-    borderTopWidth: 1,
-    borderTopColor: '#444',
-    backgroundColor: '#1E1E1E',
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    borderColor: '#444',
+    height: 50, 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: 2, 
+    backgroundColor: '#AFCCD0',
     borderWidth: 1,
-    borderRadius: 20,
-    paddingLeft: 15,
-    backgroundColor: '#333',
-    color: 'white',
+    borderColor: 'gray', 
   },
-  sendButton: {
-    backgroundColor: '#4CAF50',
-    padding: 10,
-    borderRadius: 50,
+  backButton: { 
+    padding: 10 
   },
-  sendButtonText: {
-    fontSize: 20,
-    color: 'white',
+  headerText: { 
+    color: 'white', 
+    fontSize: 18, 
+    fontWeight: 'bold', 
+    flex: 1, 
     textAlign: 'center',
+    marginRight: 30, 
+  },
+  messagesContainer: { 
+    flex: 1, 
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    backgroundColor: '#e7e7e7' 
+  },
+  messageContainer: { 
+    marginBottom: 10, 
+    padding: 12, 
+    borderRadius: 20, 
+    maxWidth: '80%' 
+  },
+  sentMessage: { 
+    alignSelf: 'flex-end', 
+    backgroundColor: '#BBC181' 
+  },
+  receivedMessage: { 
+    alignSelf: 'flex-start', 
+    backgroundColor: '#729BA1' 
+  },
+  messageText: { 
+    fontSize: 16, 
+    color: 'white' 
+  },
+  inputContainer: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    padding: 10, 
+    backgroundColor: '#e7e7e7' 
+  },
+  input: { 
+    flex: 1, 
+    height: 40, 
+    borderRadius: 20, 
+    paddingHorizontal: 15, 
+    backgroundColor: '#e7e7e7',
+    borderWidth: 1, 
+    borderColor: '#9F9F9F',
+  },
+  sendButton: { 
+    marginLeft: 10, 
+    padding: 10, 
+    backgroundColor: '#896447', 
+    borderRadius: 50 
   },
 });
 

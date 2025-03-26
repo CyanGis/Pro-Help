@@ -123,19 +123,22 @@ export default function DashBoard() {
     };
 
     return (
-        <View style={styles.container}>
-            {campaigns.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                    <Text>No hay campañas disponibles.</Text>
-                </View>
-            ) : (
-                <FlatList
-                    data={campaigns}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={renderItem}
-                />
-            )}
+<View style={styles.container}>
+      {campaigns.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Image 
+            source={require('../../../../assets/empty.png')}
+            style={styles.emptyImage}
+          />
         </View>
+      ) : (
+        <FlatList
+          data={campaigns}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={renderItem}
+        />
+      )}
+    </View>
     );
 }
 
@@ -199,4 +202,9 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: 'gray',
     },
+    emptyImage: {
+        width: 300, 
+        height: 300, 
+        marginBottom: 20,
+      },
 });
