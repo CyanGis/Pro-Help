@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import UserService from '../../../Kernel/Service';
+import { Header } from 'react-native-elements';
+import UserService from '../Kernel/Service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const imagenes = {
-    '/img-camp/img-1.png': require("../../../../assets/img-camp/img-1.png"),
-    '/img-camp/img-2.png': require("../../../../assets/img-camp/img-2.png"),
-    '/img-camp/img-3.png': require("../../../../assets/img-camp/img-3.png"),
-    '/img-camp/img-4.png': require("../../../../assets/img-camp/img-4.png"),
-    '/img-camp/img-5.png': require("../../../../assets/img-camp/img-5.png"),
-    '/img-camp/img-6.png': require("../../../../assets/img-camp/img-6.png"),
-    '/img-camp/img-7.png': require("../../../../assets/img-camp/img-7.jpg"),
-    '/img-camp/img-8.png': require("../../../../assets/img-camp/img-8.jpg"),
-    '/img-camp/img-9.png': require("../../../../assets/img-camp/img-9.jpg"),
+    '/img-camp/img-1.png': require("../../assets/img-camp/img-1.png"),
+    '/img-camp/img-2.png': require("../../assets/img-camp/img-2.png"),
+    '/img-camp/img-3.png': require("../../assets/img-camp/img-3.png"),
+    '/img-camp/img-4.png': require("../../assets/img-camp/img-4.png"),
+    '/img-camp/img-5.png': require("../../assets/img-camp/img-5.png"),
+    '/img-camp/img-6.png': require("../../assets/img-camp/img-6.png"),
+    '/img-camp/img-7.png': require("../../assets/img-camp/img-7.jpg"),
+    '/img-camp/img-8.png': require("../../assets/img-camp/img-8.jpg"),
+    '/img-camp/img-9.png': require("../../assets/img-camp/img-9.jpg"),
 };
 
 const plantillas = [
@@ -73,7 +74,7 @@ const plantillas = [
     },
 ];
 
-export default function DashBoard() {
+export default function DashBoardDonante() {
     const [campaigns, setCampaigns] = useState([]);
     const [expanded, setExpanded] = useState({});  // State to manage expanded descriptions
     const isFocused = useIsFocused();
@@ -134,7 +135,7 @@ export default function DashBoard() {
             {campaigns.length === 0 ? (
                 <View style={styles.emptyContainer}>
                     <Image
-                        source={require('../../../../assets/empty.png')}
+                        source={require('../../assets/empty.png')}
                         style={styles.emptyImage}
                     />
                 </View>

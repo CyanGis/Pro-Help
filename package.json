@@ -24,7 +24,7 @@
     "avatar": "^0.1.0",
     "axios": "^1.7.9",
     "expo": "~52.0.32",
-    "expo-location": "~18.0.8",
+    "expo-location": "~18.0.10",
     "expo-splash-screen": "~0.29.22",
     "expo-status-bar": "~2.0.1",
     "firebase": "^11.5.0",

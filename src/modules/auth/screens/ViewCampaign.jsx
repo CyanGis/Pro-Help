@@ -2,6 +2,8 @@ import React from 'react';
 import {View, Text, Image, StyleSheet, TouchableOpacity} from 'react-native';
 import {Ionicons} from "@expo/vector-icons";
 import {useNavigation} from "@react-navigation/native";
+import { Linking } from 'react-native';
+
 const imagenes = {
     '/img-camp/img-1.png': require("../../../../assets/img-camp/img-1.png"),
     '/img-camp/img-2.png': require("../../../../assets/img-camp/img-2.png"),
@@ -52,8 +54,14 @@ export default function ViewCampaign({ route }) {
                 <TouchableOpacity style={styles.button}>
                     <Text style={styles.buttonText}>Suscribirse a la campaña</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Realizar donación</Text>
+                <TouchableOpacity
+                style={styles.button}
+                onPress={() => {
+                    const url = `https://www.paypal.com/donate?hosted_button_id=XXXXXXXX`; // o URL generada desde backend
+                    Linking.openURL(url).catch(err => console.error("Error abriendo PayPal", err));
+                }}
+                >
+                <Text style={styles.buttonText}>Realizar donación</Text>
                 </TouchableOpacity>
             </View>
         </View>

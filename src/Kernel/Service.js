@@ -1,7 +1,7 @@
 import axios from "axios";
 
 class UserService {
-    static BASE_URL = "http://192.168.0.216:8080"
+    static BASE_URL = "http://192.168.0.12:8080"
 
     static async login(email, password) {
         try {
@@ -13,12 +13,19 @@ class UserService {
         }
     }
 
-    static async register(userData, token) {
+    static async register(userData) {
         try {
-            const response = await axios.post(`${UserService.BASE_URL}/auth/register`, userData,
+            
+            const response = await axios.post(`${UserService.BASE_URL}/api/create-account`, userData
+                ,
                 {
-                    headers: { Authorization: `Bearer ${token}` }
-                })
+                    headers: { 
+                        'username': 'username', 
+                        'password': 'password', 
+                        'Content-Type': 'application/json'
+                      },
+                }
+            )
             return response.data;
         } catch (err) {
             throw err;
@@ -52,6 +59,7 @@ class UserService {
 
     static async getAllCampaigns (token) {
         try {
+            console.log("ya dejame en paz");
             const response = await axios.get(`${UserService.BASE_URL}/api/campaign`,
                     {
                         headers: { Authorization: `Bearer ${token}`},
@@ -98,6 +106,17 @@ class UserService {
             throw err;
         }
     }
+    static async getAllCampaigns(token = null) {
+        try {
+            const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+            const response = await axios.get(`${UserService.BASE_URL}/api/campaign`, config);
+            return response.data.data;
+        } catch (err) {
+            throw err;
+        }
+    }
+    
+    
 
     static async getFirebaseToken(jwt, password) {
         const response = await fetch(`${UserService.BASE_URL}/api/auth/firebase-token`, {

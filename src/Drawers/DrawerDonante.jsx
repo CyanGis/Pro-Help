@@ -6,6 +6,7 @@ import DashBoard from '../modules/auth/screens/DashBoard';
 import Ubicaciones from '../modules/vistaAdmin/Ubicaciones';
 import PerfilDonante from '../VistaUsuario/PerfilDonante';
 import ChatUsuario from '../VistaUsuario/ChatUsuario';
+import DashBoardDonante from '../VistaUsuario/DashBoardDonante';
 
 const Drawer = createDrawerNavigator();
 
@@ -47,7 +48,7 @@ function DrawerDonante(props) {
       {/* Pantallas del Drawer con Iconos */}
       <Drawer.Screen 
         name="DashBoard" 
-        component={DashBoard} 
+        component={DashBoardDonante} 
         options={{
           drawerIcon: ({ color, size }) => (
             <MaterialIcons name="dashboard" size={size} color={color} />

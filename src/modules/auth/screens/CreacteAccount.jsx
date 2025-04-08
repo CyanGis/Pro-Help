@@ -3,63 +3,76 @@ import { View, StyleSheet, Text, ScrollView, KeyboardAvoidingView, Platform } fr
 import { Image, Input, Button, Icon } from "@rneui/base";
 import { Picker } from '@react-native-picker/picker';
 import { isEmpty } from "lodash";
-import axios from 'axios';
+import Service from "../../../Kernel/Service"; 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CreateAccount({ navigation }) {
     const [showPassword, setShowPassword] = useState(true);
     const [showPassword2, setShowPassword2] = useState(true);
     const [name, setName] = useState("");
-    const [firstLastName, setFirstLastName] = useState("");
+    const [lastName, setFirstLastName] = useState("");
     const [sex, setSex] = useState("");
-    const [role, setRole] = useState("");
     const [phone, setPhone] = useState("");
     const [address, setAddress] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState({
-        name: "", firstLastName: "", sex: "", role: "", phone: "",
-        address: "", email: "", password: "", confirmPassword: ""
+        name: "Jose Le", lastName: "Gomez", sexo: "H", phone: "7775012348",
+        address: "gmail.com", email: "", password: "leo123" , role : "USER"
     });
 
-    const handleCreateAccount = () => {
-        if (isEmpty(name) || isEmpty(firstLastName) || isEmpty(sex) || isEmpty(role) || 
+    const handleCreateAccount = async () => {
+        if (isEmpty(name) || isEmpty(lastName) || isEmpty(sex) ||  
             isEmpty(phone) || isEmpty(address) || isEmpty(email) || isEmpty(password) || isEmpty(confirmPassword)) {
             setError({
                 name: isEmpty(name) ? "El nombre es requerido" : "",
-                firstLastName: isEmpty(firstLastName) ? "El primer apellido es requerido" : "",
+                lastName: isEmpty(lastName) ? "El primer apellido es requerido" : "",
                 sex: isEmpty(sex) ? "El sexo es requerido" : "",
-                role: isEmpty(role) ? "El rol es requerido" : "",
                 phone: isEmpty(phone) ? "El número de teléfono es requerido" : "",
                 address: isEmpty(address) ? "La dirección es requerida" : "",
                 email: isEmpty(email) ? "El correo electrónico es requerido" : "",
                 password: isEmpty(password) ? "La contraseña es requerida" : "",
                 confirmPassword: isEmpty(confirmPassword) ? "La confirmación de la contraseña es requerida" : ""
+                
             });
-        } else if (password !== confirmPassword) {
+            return;
+        }
+    
+        if (password !== confirmPassword) {
             setError({
                 ...error,
                 password: "Las contraseñas no coinciden",
                 confirmPassword: "Las contraseñas no coinciden"
             });
-        } else {
-            setError({
-                name: "", firstLastName: "", sex: "", role: "", phone: "",
-                address: "", email: "", password: "", confirmPassword: ""
-            });
+            return;
+        }
+    
+        setError({
+            name: "", lastName: "", sex: "", phone: "",
+            address: "", email: "", password: "", confirmPassword: ""
+        });
+    
+        try {
+            console.log("Creando cuenta con los siguientes datos:");
+            console.log("Nombre>:", name);
+            
+            //const token = await AsyncStorage.getItem('token'); // Obtiene el token guardado
+            const userData = { name: "leo", lastName:"Mart", sexo: "H", phone:"767632", address:"FDADS", email:"gmail.com", password:"12345", role:"USER" };
+            console.log("Datos del usuario:", userData);
+            console.log("whyyyy");
+            const response = await Service.register(userData);
+            console.log("Usuario registrado:", response);
 
-            axios.post('https://tuapi.com/register', { 
-                name, firstLastName, sex, role, phone, address, email, password 
-            })
-            .then((response) => {
-                console.log(response.data);
-            })
-            .catch((error) => {
-                console.log(error.response.data);
-            });
+            console.log("hola");
+            
+            navigation.navigate("DashBoardDonante");
+            
+        } catch (error) {
+            console.log("Error en el registro:", error.response?.data || error.message);
         }
     };
-
+    
     return (
         <KeyboardAvoidingView 
             behavior={Platform.OS === "ios" ? "padding" : "height"} 
@@ -71,10 +84,10 @@ export default function CreateAccount({ navigation }) {
                 keyboardShouldPersistTaps="handled"
                 nestedScrollEnabled={true}
             >
-            <Image
-                source={require('../../../../assets/logoLogin.png')}
-                style={{ width: 50, height: 50, marginBottom: 20 }}
-            />
+                <Image
+                    source={require('../../../../assets/logoLogin.png')}
+                    style={{ width: 50, height: 50, marginBottom: 20 }}
+                />
                 <View style={styles.formContainer}>
                     <Input
                         placeholder="Nombre"
@@ -90,23 +103,20 @@ export default function CreateAccount({ navigation }) {
                         inputContainerStyle={styles.inputContainer}
                         inputStyle={styles.input}
                         onChange={({ nativeEvent: { text } }) => setFirstLastName(text)}
-                        errorMessage={error.firstLastName}
+                        errorMessage={error.lastName}
                     />
 
-                    <View style={styles.row}>
-                        <View style={styles.pickerWrapper}>
-                            <Text style={styles.label}>Sexo:</Text>
-                            <Picker
-                                selectedValue={sex}
-                                style={styles.picker}
-                                onValueChange={(itemValue) => setSex(itemValue)}
-                            >
-                                <Picker.Item label="Masculino" value="male" />
-                                <Picker.Item label="Femenino" value="female" />
-                                <Picker.Item label="Otro" value="other" />
-                            </Picker>
-                        </View>
-
+                    <View style={styles.pickerWrapper}>
+                        <Text style={styles.label}>Sexo:</Text>
+                        <Picker
+                            selectedValue={sex}
+                            style={styles.picker}
+                            onValueChange={(itemValue) => setSex(itemValue)}
+                        >
+                            <Picker.Item label="Masculino" value="male" />
+                            <Picker.Item label="Femenino" value="female" />
+                            <Picker.Item label="Otro" value="other" />
+                        </Picker>
                     </View>
 
                     <Input
@@ -155,13 +165,13 @@ export default function CreateAccount({ navigation }) {
                         onChange={({ nativeEvent: { text } }) => setConfirmPassword(text)}
                         errorMessage={error.confirmPassword}
                     />
-
                     <Button title="Crear Cuenta" onPress={handleCreateAccount} buttonStyle={styles.button} />
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: { 

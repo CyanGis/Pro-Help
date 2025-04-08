@@ -62,7 +62,8 @@
                     navigation.replace('DashBoard');
                 } else {
                     console.log("Usuario no es ADMIN");
-                    Alert.alert("Acceso Denegado", "Este usuario no tiene permisos de administrador.");
+                    // Alert.alert("Acceso Denegado", "Este usuario no tiene permisos de administrador.");
+                    navigation.replace('DashBoardDonante');
                 }
     
             } catch (err) {
@@ -107,9 +108,9 @@
                     buttonStyle={styles.button}
                     onPress={handleLogin}
                 />
-                <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
+                {/* <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
                     <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TouchableOpacity onPress={() => navigation.navigate('CreateAccount')}>
                     <Text style={styles.registerText}>
                         ¿Aún no tienes una cuenta? <Text style={styles.registerLink}>Regístrate</Text>
@@ -118,7 +119,7 @@
                 <Button
                     title="Ingresar como Invitado"
                     buttonStyle={[styles.button, styles.guestButton]}
-                    onPress={() => navigation.replace("DashBoardInvitado")}
+                    onPress={() => navigation.replace('DashBoardInvitado')}
                 />
             </View>
         </View>

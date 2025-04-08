@@ -6,6 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import UserService from "../../Kernel/Service";
 
 export default function PerfilAdmin() {
+  const [userId, setUserId] = useState("");
   const [modalEditar, setModalEditar] = useState(false);
   const [modalPassword, setModalPassword] = useState(false);
 
@@ -23,15 +24,16 @@ export default function PerfilAdmin() {
         console.log("Token obtenido: ", value);
         const profile = await UserService.getYourProfile(value);
         console.log(profile);
-
+  
         if (profile) {
           // Actualiza el estado con los datos del perfil
           setNombre(profile.user.name || "Nombre no disponible");
           setEmail(profile.user.email || "Email no disponible");
           setRole(profile.user.role || "Rol no disponible");
-
+          setUserId(profile.user.id);  // Asegúrate de actualizar el userId
+  
           console.log(nombre, email);
-
+  
           const existingProfile = await AsyncStorage.getItem('profile');
           if (existingProfile !== JSON.stringify(profile)) {
             await AsyncStorage.setItem("profile", JSON.stringify(profile));
@@ -47,70 +49,93 @@ export default function PerfilAdmin() {
       console.error("Error al obtener el dato: ", error);
     }
   };
+  
+
+  const handleUpdateProfile = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      const userData = { name: nombre }; // Solo permitimos editar el nombre
+  
+      console.log("Actualizando con los siguientes datos:", { userId, userData, token });
+  
+      const response = await UserService.updateUser(userId, userData, token);
+      console.log("Respuesta de actualización:", response);
+  
+      setModalEditar(false);
+      getData(); // Refresca la información
+    } catch (err) {
+      console.error("Error al actualizar perfil:", err);
+    }
+  
+    if (!nombre.trim()) {
+      alert("El nombre no puede estar vacío");
+      return;
+    }
+  };
+  
 
   useEffect(() => {
     getData();
   }, [isFocused]);
 
   return (
-      <ScrollView style={styles.container}>
-        <View style={styles.profileHeader}>
-          <Image source={{ uri: 'https://i.pravatar.cc/150' }} style={styles.profilePic} />
-          <View style={styles.userInfo}>
-            <Text style={styles.userName}>{nombre}</Text>
-            <Text style={styles.userEmail}>{email}</Text>
-            <Text style={styles.userRole}>{role}</Text>
+    <ScrollView style={styles.container}>
+      <View style={styles.profileHeader}>
+        <Image source={{ uri: 'https://i.pravatar.cc/150' }} style={styles.profilePic} />
+        <View style={styles.userInfo}>
+          <Text style={styles.userName}>{nombre}</Text>
+          <Text style={styles.userEmail}>{email}</Text>
+          <Text style={styles.userRole}>{role}</Text>
+        </View>
+      </View>
+
+      <TouchableOpacity style={styles.button} onPress={() => setModalEditar(true)}>
+        <Icon name="account-edit" type="material-community" color="#fff" size={20} />
+        <Text style={styles.buttonText}>Editar Perfil</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.buttonSecondary} onPress={() => setModalPassword(true)}>
+        <Icon name="lock-reset" type="material-community" color="#fff" size={20} />
+        <Text style={styles.buttonText}>Cambiar Contraseña</Text>
+      </TouchableOpacity>
+
+      {/* Modal para Editar Perfil */}
+      <Modal visible={modalEditar} transparent animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Editar Perfil</Text>
+            <TextInput style={styles.input} value={nombre} onChangeText={setNombre} placeholder="Nombre" />
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={styles.saveButton} onPress={handleUpdateProfile}>
+                <Text style={styles.saveButtonText}>Guardar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setModalEditar(false)}>
+                <Text style={styles.closeButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
+      </Modal>
 
-        <TouchableOpacity style={styles.button} onPress={() => setModalEditar(true)}>
-          <Icon name="account-edit" type="material-community" color="#fff" size={20} />
-          <Text style={styles.buttonText}>Editar Perfil</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.buttonSecondary} onPress={() => setModalPassword(true)}>
-          <Icon name="lock-reset" type="material-community" color="#fff" size={20} />
-          <Text style={styles.buttonText}>Cambiar Contraseña</Text>
-        </TouchableOpacity>
-
-        {/* Modal para Editar Perfil */}
-        <Modal visible={modalEditar} transparent animationType="slide">
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Editar Perfil</Text>
-              <TextInput style={styles.input} value={nombre} onChangeText={setNombre} placeholder="Nombre" />
-
-              <View style={styles.buttonRow}>
-                <TouchableOpacity style={styles.saveButton} onPress={() => setModalEditar(false)}>
-                  <Text style={styles.saveButtonText}>Guardar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.closeButton} onPress={() => setModalEditar(false)}>
-                  <Text style={styles.closeButtonText}>Cancelar</Text>
-                </TouchableOpacity>
-              </View>
+      {/* Modal para Cambiar Contraseña */}
+      <Modal visible={modalPassword} transparent animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Cambiar Contraseña</Text>
+            <TextInput style={styles.input} secureTextEntry value={password} onChangeText={setPassword} placeholder="Contraseña Actual" />
+            <TextInput style={styles.input} secureTextEntry value={newPassword} onChangeText={setNewPassword} placeholder="Nueva Contraseña" />
+            <View style={styles.buttonRow}>
+              <TouchableOpacity style={styles.saveButton} onPress={() => setModalPassword(false)}>
+                <Text style={styles.saveButtonText}>Actualizar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.closeButton} onPress={() => setModalPassword(false)}>
+                <Text style={styles.closeButtonText}>Cancelar</Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </Modal>
-
-        {/* Modal para Cambiar Contraseña */}
-        <Modal visible={modalPassword} transparent animationType="slide">
-          <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Cambiar Contraseña</Text>
-              <TextInput style={styles.input} secureTextEntry value={password} onChangeText={setPassword} placeholder="Contraseña Actual" />
-              <TextInput style={styles.input} secureTextEntry value={newPassword} onChangeText={setNewPassword} placeholder="Nueva Contraseña" />
-              <View style={styles.buttonRow}>
-                <TouchableOpacity style={styles.saveButton} onPress={() => setModalPassword(false)}>
-                  <Text style={styles.saveButtonText}>Actualizar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.closeButton} onPress={() => setModalPassword(false)}>
-                  <Text style={styles.closeButtonText}>Cancelar</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      </ScrollView>
+        </View>
+      </Modal>
+    </ScrollView>
   );
 }
 

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity, Modal, Button } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
-import UserService from '../../../Kernel/Service';
+import UserService from '../Kernel/Service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const imagenes = {
-    '/img-camp/img-1.png': require("../../../../assets/img-camp/img-1.png"),
-    '/img-camp/img-2.png': require("../../../../assets/img-camp/img-2.png"),
-    '/img-camp/img-3.png': require("../../../../assets/img-camp/img-3.png"),
-    '/img-camp/img-4.png': require("../../../../assets/img-camp/img-4.png"),
-    '/img-camp/img-5.png': require("../../../../assets/img-camp/img-5.png"),
-    '/img-camp/img-6.png': require("../../../../assets/img-camp/img-6.png"),
-    '/img-camp/img-7.png': require("../../../../assets/img-camp/img-7.jpg"),
-    '/img-camp/img-8.png': require("../../../../assets/img-camp/img-8.jpg"),
-    '/img-camp/img-9.png': require("../../../../assets/img-camp/img-9.jpg"),
+    '/img-camp/img-1.png': require("../../assets/img-camp/img-1.png"),
+    '/img-camp/img-2.png': require("../../assets/img-camp/img-2.png"),
+    '/img-camp/img-3.png': require("../../assets/img-camp/img-3.png"),
+    '/img-camp/img-4.png': require("../../assets/img-camp/img-4.png"),
+    '/img-camp/img-5.png': require("../../assets/img-camp/img-5.png"),
+    '/img-camp/img-6.png': require("../../assets/img-camp/img-6.png"),
+    '/img-camp/img-7.png': require("../../assets/img-camp/img-7.jpg"),
+    '/img-camp/img-8.png': require("../../assets/img-camp/img-8.jpg"),
+    '/img-camp/img-9.png': require("../../assets/img-camp/img-9.jpg"),
 };
 
 const plantillas = [
@@ -27,7 +27,7 @@ const plantillas = [
                     <Text style={styles.title}>{titulo}</Text>
                 </View>
                 {
-                    imagen.length > 20 ?
+                    imagen.length > 20 ? 
                         <Image source={{ uri: imagen }} style={styles.image} /> :
                         <Image source={imagenes[imagen]} style={styles.image} />
                 }
@@ -45,55 +45,22 @@ const plantillas = [
             </View>
         ),
     },
-    {
-        nombre: "Moderna Azul",
-        codigo: "002",
-        categoria: "Moderna",
-        componente: ({ titulo, descripcion, imagen, categoria, onToggleDescription, isExpanded }) => (
-            <View style={styles.cardAlt}>
-                {
-                    imagen.length > 40 ?
-                        <Image source={{ uri: imagen }} style={styles.image} /> :
-                        <Image source={imagenes[imagen]} style={styles.image} />
-                }
-                <View style={styles.infoContainer}>
-                    <Text style={styles.titleAlt}>{titulo}</Text>
-                    <Text style={styles.descriptionAlt}>
-                        {isExpanded ? descripcion : descripcion.slice(0, 100) + '...'}
-                    </Text>
-                    {descripcion.length > 100 && (
-                        <TouchableOpacity onPress={onToggleDescription}>
-                            <Text style={styles.link}>{isExpanded ? 'Ver menos' : 'Ver más'}</Text>
-                        </TouchableOpacity>
-                    )}
-                    <Text style={styles.categoryAlt}>{categoria}</Text>
-                </View>
-            </View>
-        ),
-    },
 ];
 
-export default function DashBoard() {
+export default function DashBoardInvitado() {
     const [campaigns, setCampaigns] = useState([]);
-    const [expanded, setExpanded] = useState({});  // State to manage expanded descriptions
+    const [expanded, setExpanded] = useState({});
+    const [modalVisible, setModalVisible] = useState(false);  // Modal state
+    const [selectedCampaign, setSelectedCampaign] = useState(null); // Store the selected campaign
     const isFocused = useIsFocused();
     const navigation = useNavigation();
 
     const getData = async () => {
         try {
-            const value = await AsyncStorage.getItem('token');
-            if (value !== null) {
-                const profile = await UserService.getYourProfile(value);
-                try {
-                    const campaings = await UserService.getAllCampaigns(value);
-                    setCampaigns(campaings);
-                    console.log(campaings[0])
-                } catch (error) {
-                    console.error("Error al obtener campañas: ", error);
-                }
-            }
+            const campaings = await UserService.getAllCampaigns();  // Assume this works for invited users
+            setCampaigns(campaings);
         } catch (error) {
-            console.error("Error al obtener el dato: ", error);
+            console.error("Error al obtener campañas: ", error);
         }
     };
 
@@ -104,17 +71,29 @@ export default function DashBoard() {
     const handleToggleDescription = (id) => {
         setExpanded(prev => ({
             ...prev,
-            [id]: !prev[id],  // Toggle the expansion state of the description
+            [id]: !prev[id],
         }));
+    };
+
+    const handleCampaignPress = (item) => {
+        // Check if the user is logged in
+        AsyncStorage.getItem('token').then(token => {
+            if (!token) {
+                // Show the modal if the user is not logged in
+                setSelectedCampaign(item);
+                setModalVisible(true);
+            } else {
+                // Navigate to campaign details if the user is logged in
+                navigation.navigate('ViewCampaign', { item });
+            }
+        });
     };
 
     const renderItem = ({ item }) => {
         const plantilla = plantillas.find(p => p.codigo === item.templateEntity?.codigo);
         if (plantilla) {
             return (
-                <TouchableOpacity onPress={() =>
-                    navigation.navigate('ViewCampaign', {item})
-                }>
+                <TouchableOpacity onPress={() => handleCampaignPress(item)}>
                     {plantilla.componente({
                         titulo: item.nombre,
                         descripcion: item.descripcion,
@@ -129,12 +108,22 @@ export default function DashBoard() {
         return null;
     };
 
+    const handleCreateAccount = () => {
+        // Redirect to account creation page
+        navigation.navigate('CreateAccount');
+        setModalVisible(false);  // Close the modal
+    };
+
+    const handleCancel = () => {
+        setModalVisible(false);  // Close the modal without action
+    };
+
     return (
         <View style={styles.container}>
             {campaigns.length === 0 ? (
                 <View style={styles.emptyContainer}>
                     <Image
-                        source={require('../../../../assets/empty.png')}
+                        source={require('../../assets/empty.png')}
                         style={styles.emptyImage}
                     />
                 </View>
@@ -146,6 +135,25 @@ export default function DashBoard() {
                     renderItem={renderItem}
                 />
             )}
+
+            {/* Modal for creating an account */}
+            <Modal
+                visible={modalVisible}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={handleCancel}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>¡Crea una cuenta!</Text>
+                        <Text style={styles.modalDescription}>
+                            Para ver los detalles de esta campaña, necesitas tener una cuenta.
+                        </Text>
+                        <Button title="Crear cuenta" onPress={handleCreateAccount} />
+                        <Button title="Cancelar" onPress={handleCancel} color="gray" />
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
@@ -202,27 +210,27 @@ const styles = StyleSheet.create({
         marginTop: 5,
         color: 'gray',
     },
-    cardAlt: {
-        margin: 30,
-        backgroundColor: '#f0f0f0',
-        marginBottom: 10,
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        backgroundColor: 'white',
+        padding: 20,
         borderRadius: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.3,
-        shadowRadius: 4,
-        elevation: 5,
+        width: '80%',
+        alignItems: 'center',
     },
-    titleAlt: {
-        fontSize: 30,
+    modalTitle: {
+        fontSize: 20,
         fontWeight: 'bold',
+        marginBottom: 10,
     },
-    descriptionAlt: {
-        fontSize: 18,
-    },
-    categoryAlt: {
-        fontSize: 12,
-        color: 'gray',
+    modalDescription: {
+        fontSize: 16,
+        marginBottom: 20,
     },
     emptyImage: {
         width: 200,

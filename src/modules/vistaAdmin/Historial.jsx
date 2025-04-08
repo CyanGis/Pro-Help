@@ -1,37 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
+import UserService from '../../Kernel/Service';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function Historial() {
-    // Suponiendo que estos son los usuarios que participaron en las campañas
-    const [usuarios, setUsuarios] = useState([
-        { id: '1', name: 'Juan Pérez', campaign: 'Campaña de Donación' },
-        { id: '2', name: 'Ana Gómez', campaign: 'Campaña de Reciclaje' },
-        { id: '3', name: 'Luis Rodríguez', campaign: 'Campaña de Reforestación' },
-        // Puedes reemplazar esta lista con los datos de una API
-    ]);
+    const [usuarios, setUsuarios] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Aquí podrías hacer la llamada a la API si fuera necesario
-        // Por ejemplo:
-        // axios.get('tuAPI.com/usuarios')
-        // .then(response => setUsuarios(response.data));
-    }, []);
+        // Obtener el token desde AsyncStorage
+        const fetchUsuarios = async () => {
+            try {
+                const token = await AsyncStorage.getItem('token');
+                console.log('TOKEN:', token);
+        
+                if (token) {
+                    const response = await UserService.getAllUsers(token);
+                    console.log('Usuarios:', response);
+                    setUsuarios(response?.users || response);
+                } else {
+                    console.log('Token no encontrado');
+                    setError('Token no encontrado');
+                }
+            } catch (err) {
+                console.log('ERROR AL CARGAR:', err);
+                setError('Error al cargar los usuarios');
+            } finally {
+                setLoading(false);
+            }
+        };        
+
+        fetchUsuarios();
+    }, []);  // Dependencias vacías para que se ejecute solo al montar el componente
 
     const renderItem = ({ item }) => (
         <View style={styles.userContainer}>
             <Text style={styles.userName}>{item.name}</Text>
-            <Text style={styles.campaignName}>Participó en: {item.campaign}</Text>
+            {/* <Text style={styles.campaignName}>Participó en: {item.campaign}</Text> */}
         </View>
     );
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Historial de Usuarios</Text>
-            <FlatList
-                data={usuarios}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.id}
-            />
+            {loading ? (
+                <Text>Cargando...</Text>
+            ) : error ? (
+                <Text style={styles.error}>{error}</Text>
+            ) : (
+                <FlatList
+                    data={usuarios}
+                    renderItem={renderItem}
+                    keyExtractor={(item) => item.id.toString()}
+                />
+            )}
         </View>
     );
 }
@@ -60,5 +84,9 @@ const styles = StyleSheet.create({
     campaignName: {
         fontSize: 16,
         color: '#555',
+    },
+    error: {
+        color: 'red',
+        fontSize: 16,
     },
 });

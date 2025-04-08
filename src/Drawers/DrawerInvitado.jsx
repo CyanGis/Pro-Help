@@ -2,8 +2,9 @@ import React from "react";
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons"; // Importar iconos de Expo
-import DashBoard from "../modules/auth/screens/DashBoard";
+import DashBoardInvitado from "../vistaInvitado/DashBoardInvitado";
 import CreacteAccount from '../modules/auth/screens/CreacteAccount'
+import DashBoard from "../modules/auth/screens/DashBoard";
 
 const logoDrawer = require("../../assets/logoDrawer.png");
 const Drawer = createDrawerNavigator();
@@ -46,7 +47,7 @@ export default function DrawerInvitado() {
       {/* Pantallas con iconos */}
       <Drawer.Screen
         name="DashBoard"
-        component={DashBoard}
+        component={DashBoardInvitado}
         options={{
           drawerIcon: ({ color, size }) => <MaterialIcons name="dashboard" size={size} color={color} />,
         }}
