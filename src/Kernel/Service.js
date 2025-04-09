@@ -1,29 +1,30 @@
 import axios from "axios";
 
 class UserService {
-    static BASE_URL = "http://192.168.0.12:8080"
+    static BASE_URL = "http://192.168.100.184:8080"
 
     static async login(email, password) {
         try {
-            const response = await axios.post(`${UserService.BASE_URL}/api/auth/login`, { email, password })
+            const response = await axios.post(`${UserService.BASE_URL}/api/auth/login`, { email, password });
             return response.data;
 
         } catch (err) {
+            console.error("Error al hacer login:", err);
             throw err;
         }
     }
 
     static async register(userData) {
         try {
-            
+
             const response = await axios.post(`${UserService.BASE_URL}/api/create-account`, userData
                 ,
                 {
-                    headers: { 
-                        'username': 'username', 
-                        'password': 'password', 
+                    headers: {
+                        'username': 'username',
+                        'password': 'password',
                         'Content-Type': 'application/json'
-                      },
+                    },
                 }
             )
             return response.data;
@@ -34,7 +35,7 @@ class UserService {
 
     static async getAllUsers(token) {
         try {
-            const response = await axios.get(`${UserService.BASE_URL}/admin/get-all-users`,
+            const response = await axios.get(`${UserService.BASE_URL}/api/adminuser/get-all-users`,
                 {
                     headers: { Authorization: `Bearer ${token}` }
                 })
@@ -45,7 +46,7 @@ class UserService {
     }
 
 
-    static async getYourProfile(token) {//obtiene el perfil del usuario logueado con el token que se le pasa como parametro
+    static async getYourProfile(token) {
         try {
             const response = await axios.get(`${UserService.BASE_URL}/api/adminuser/get-profile`,
                 {
@@ -57,18 +58,18 @@ class UserService {
         }
     }
 
-    static async getAllCampaigns (token) {
+    static async getAllCampaigns() {
         try {
-            console.log("ya dejame en paz");
-            const response = await axios.get(`${UserService.BASE_URL}/api/campaign`,
-                    {
-                        headers: { Authorization: `Bearer ${token}`},
-                    })
-                return response.data.data;
+            console.log("Obteniendo campañas...");
+            const response = await axios.get(`${UserService.BASE_URL}/api/campaign`);
+            console.log("Respuesta de campañas:", response.data);
+            return response.data.data;
         } catch (err) {
+            console.error("Error al obtener campañas:", err);
             throw err;
         }
     }
+
 
     static async getUserById(userId, token) {
         try {
@@ -106,6 +107,7 @@ class UserService {
             throw err;
         }
     }
+    
     static async getAllCampaigns(token = null) {
         try {
             const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
@@ -115,8 +117,6 @@ class UserService {
             throw err;
         }
     }
-    
-    
 
     static async getFirebaseToken(jwt, password) {
         const response = await fetch(`${UserService.BASE_URL}/api/auth/firebase-token`, {
@@ -140,7 +140,7 @@ class UserService {
                         Authorization: `bearer ${token}`
                     }
                 })
-                return resonse.data;
+            return resonse.data;
         } catch (error) {
             throw error
         }
