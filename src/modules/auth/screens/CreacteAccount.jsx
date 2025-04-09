@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { Image, Input, Button, Icon } from "@rneui/base";
 import { Picker } from '@react-native-picker/picker';
 import { isEmpty } from "lodash";
-import Service from "../../../Kernel/Service"; 
+import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CreateAccount({ navigation }) {
@@ -13,80 +13,97 @@ export default function CreateAccount({ navigation }) {
     const [lastName, setFirstLastName] = useState("");
     const [sex, setSex] = useState("");
     const [phone, setPhone] = useState("");
-    const [address, setAddress] = useState("");
+    const [direccion, setDireccion] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState({
-        name: "Jose Le", lastName: "Gomez", sexo: "H", phone: "7775012348",
-        address: "gmail.com", email: "", password: "leo123" , role : "USER"
+        name: "", lastName: "", sex: "", phone: "",
+        direccion: "", email: "", password: "", confirmPassword: ""
     });
 
     const handleCreateAccount = async () => {
-        if (isEmpty(name) || isEmpty(lastName) || isEmpty(sex) ||  
-            isEmpty(phone) || isEmpty(address) || isEmpty(email) || isEmpty(password) || isEmpty(confirmPassword)) {
+        if (isEmpty(name) || isEmpty(lastName) || isEmpty(sex) ||
+            isEmpty(phone) || isEmpty(direccion) || isEmpty(email) || isEmpty(password) || isEmpty(confirmPassword)) {
             setError({
                 name: isEmpty(name) ? "El nombre es requerido" : "",
                 lastName: isEmpty(lastName) ? "El primer apellido es requerido" : "",
                 sex: isEmpty(sex) ? "El sexo es requerido" : "",
                 phone: isEmpty(phone) ? "El número de teléfono es requerido" : "",
-                address: isEmpty(address) ? "La dirección es requerida" : "",
+                direccion: isEmpty(direccion) ? "La dirección es requerida" : "",
                 email: isEmpty(email) ? "El correo electrónico es requerido" : "",
                 password: isEmpty(password) ? "La contraseña es requerida" : "",
                 confirmPassword: isEmpty(confirmPassword) ? "La confirmación de la contraseña es requerida" : ""
-                
             });
             return;
         }
-    
+
         if (password !== confirmPassword) {
-            setError({
-                ...error,
+            setError(prev => ({
+                ...prev,
                 password: "Las contraseñas no coinciden",
                 confirmPassword: "Las contraseñas no coinciden"
-            });
+            }));
             return;
         }
-    
+
         setError({
             name: "", lastName: "", sex: "", phone: "",
-            address: "", email: "", password: "", confirmPassword: ""
+            direccion: "", email: "", password: "", confirmPassword: ""
         });
-    
-        try {
-            console.log("Creando cuenta con los siguientes datos:");
-            console.log("Nombre>:", name);
-            
-            //const token = await AsyncStorage.getItem('token'); // Obtiene el token guardado
-            const userData = { name: "leo", lastName:"Mart", sexo: "H", phone:"767632", address:"FDADS", email:"gmail.com", password:"12345", role:"USER" };
-            console.log("Datos del usuario:", userData);
-            console.log("whyyyy");
-            const response = await Service.register(userData);
-            console.log("Usuario registrado:", response);
 
-            console.log("hola");
-            
-            navigation.navigate("DashBoardDonante");
-            
+        try {
+            const userData = {
+                name,
+                lastName,
+                sexo: sex,
+                phone,
+                direccion,
+                email,
+                password,
+                role: "USER"
+            };
+
+            const response = await axios.post(
+                'http://192.168.100.184:8080/api/auth/register',
+                userData,
+                {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            if (response.status === 200) {
+                // Si el registro es exitoso
+                Alert.alert('¡Éxito!', 'Tu cuenta ha sido creada correctamente.', [
+                    { text: 'OK', onPress: () => navigation.navigate('DashBoardDonante') }
+                ]);
+            } else {
+                // Si hay algún error en el backend
+                Alert.alert('Error', 'Hubo un problema al registrar tu cuenta, por favor intenta nuevamente.');
+            }
+
         } catch (error) {
             console.log("Error en el registro:", error.response?.data || error.message);
+            Alert.alert('Error', 'Hubo un problema con la conexión, por favor intenta nuevamente.');
         }
     };
-    
+
     return (
-        <KeyboardAvoidingView 
-            behavior={Platform.OS === "ios" ? "padding" : "height"} 
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.container}
             keyboardVerticalOffset={100}
         >
-            <ScrollView 
-                contentContainerStyle={styles.scrollView} 
+            <ScrollView
+                contentContainerStyle={styles.scrollView}
                 keyboardShouldPersistTaps="handled"
                 nestedScrollEnabled={true}
             >
                 <Image
                     source={require('../../../../assets/logoLogin.png')}
-                    style={{ width: 50, height: 50, marginBottom: 20 }}
+                    style={styles.logo}
                 />
                 <View style={styles.formContainer}>
                     <Input
@@ -105,7 +122,6 @@ export default function CreateAccount({ navigation }) {
                         onChange={({ nativeEvent: { text } }) => setFirstLastName(text)}
                         errorMessage={error.lastName}
                     />
-
                     <View style={styles.pickerWrapper}>
                         <Text style={styles.label}>Sexo:</Text>
                         <Picker
@@ -113,10 +129,12 @@ export default function CreateAccount({ navigation }) {
                             style={styles.picker}
                             onValueChange={(itemValue) => setSex(itemValue)}
                         >
-                            <Picker.Item label="Masculino" value="male" />
-                            <Picker.Item label="Femenino" value="female" />
-                            <Picker.Item label="Otro" value="other" />
+                            <Picker.Item label="Selecciona tu sexo" value="" />
+                            <Picker.Item label="Masculino" value="H" />
+                            <Picker.Item label="Femenino" value="M" />
+                            <Picker.Item label="Otro" value="O" />
                         </Picker>
+                        {!!error.sex && <Text style={styles.errorText}>{error.sex}</Text>}
                     </View>
 
                     <Input
@@ -133,13 +151,13 @@ export default function CreateAccount({ navigation }) {
                         label="Dirección:"
                         inputContainerStyle={styles.inputContainer}
                         inputStyle={styles.input}
-                        onChange={({ nativeEvent: { text } }) => setAddress(text)}
-                        errorMessage={error.address}
+                        onChange={({ nativeEvent: { text } }) => setDireccion(text)}
+                        errorMessage={error.direccion}
                     />
                     <Input
                         placeholder="Correo Electrónico"
                         label="Correo Electrónico:"
-                        keyboardType="email-address"
+                        keyboardType="email-direccion"
                         inputContainerStyle={styles.inputContainer}
                         inputStyle={styles.input}
                         onChange={({ nativeEvent: { text } }) => setEmail(text)}
@@ -172,50 +190,58 @@ export default function CreateAccount({ navigation }) {
     );
 }
 
-
 const styles = StyleSheet.create({
-    container: { 
-        flex: 1, 
-        backgroundColor: '#AFCCD0' 
+    container: {
+        flex: 1,
+        backgroundColor: '#AFCCD0'
     },
-    scrollView: { 
-        flexGrow: 1, 
-        alignItems: 'center', 
-        paddingVertical: 20, 
-        paddingBottom: 50 
+    scrollView: {
+        flexGrow: 1,
+        alignItems: 'center',
+        paddingVertical: 20,
+        paddingBottom: 50
     },
     logo: {
-         width: 100, 
-         height: 100, 
-         marginBottom: 20 
-        },
-    formContainer: { 
-        width: '90%', 
-        backgroundColor: '#fff', 
-        borderRadius: 10, 
-        padding: 20 
+        width: 100,
+        height: 100,
+        marginBottom: 20
     },
-    row: { 
-        flexDirection: "row", 
-        justifyContent: "space-between" 
+    formContainer: {
+        width: '90%',
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 20
     },
-    pickerWrapper: { 
-        flex:1,
-        width: '70%',
-        height: '20%',
+    inputContainer: {
+        borderBottomWidth: 0
     },
-    picker: { 
-        backgroundColor: '#f2f2f2', 
-        borderRadius: 8 
+    input: {
+        backgroundColor: '#f2f2f2',
+        paddingHorizontal: 10,
+        borderRadius: 8
     },
-    inputContainer: { 
-        width: '100%' 
+    pickerWrapper: {
+        marginBottom: 20
     },
-    input: { 
-        color: '#000' },
-    button: {
+    picker: {
+        backgroundColor: '#f2f2f2',
         borderRadius: 8,
-        backgroundColor: '#896447',
-        marginVertical: 10
+        marginTop: 5
     },
+    label: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginBottom: 5
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 12,
+        marginTop: 5
+    },
+    button: {
+        backgroundColor: '#397af8',
+        borderRadius: 8,
+        paddingVertical: 12,
+        marginTop: 10
+    }
 });

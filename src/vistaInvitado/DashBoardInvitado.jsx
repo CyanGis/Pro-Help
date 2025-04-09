@@ -27,7 +27,7 @@ const plantillas = [
                     <Text style={styles.title}>{titulo}</Text>
                 </View>
                 {
-                    imagen.length > 20 ? 
+                    imagen.length > 20 ?
                         <Image source={{ uri: imagen }} style={styles.image} /> :
                         <Image source={imagenes[imagen]} style={styles.image} />
                 }
@@ -136,21 +136,25 @@ export default function DashBoardInvitado() {
                 />
             )}
 
-            {/* Modal for creating an account */}
+            {/* Modal crear cuenta*/}
             <Modal
                 visible={modalVisible}
                 animationType="slide"
                 transparent={true}
                 onRequestClose={handleCancel}
             >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
                         <Text style={styles.modalTitle}>¡Crea una cuenta!</Text>
                         <Text style={styles.modalDescription}>
                             Para ver los detalles de esta campaña, necesitas tener una cuenta.
                         </Text>
-                        <Button title="Crear cuenta" onPress={handleCreateAccount} />
-                        <Button title="Cancelar" onPress={handleCancel} color="gray" />
+                        <View style={styles.buttonContainer}>
+                            <Button title="Crear cuenta" onPress={handleCreateAccount} color="#0066cc" />
+                        </View>
+                        <View style={styles.buttonContainer}>
+                            <Button title="Cancelar" onPress={handleCancel} color="gray" />
+                        </View>
                     </View>
                 </View>
             </Modal>
@@ -210,12 +214,6 @@ const styles = StyleSheet.create({
         marginTop: 5,
         color: 'gray',
     },
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
     modalContent: {
         backgroundColor: 'white',
         padding: 20,
@@ -223,17 +221,42 @@ const styles = StyleSheet.create({
         width: '80%',
         alignItems: 'center',
     },
-    modalTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    modalDescription: {
-        fontSize: 16,
-        marginBottom: 20,
-    },
     emptyImage: {
         width: 200,
         height: 200,
+    },
+    modalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContainer: {
+        width: '80%',
+        backgroundColor: 'white',
+        borderRadius: 15,
+        padding: 20,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+        elevation: 5,
+    },
+    modalTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 15,
+    },
+    modalDescription: {
+        fontSize: 16,
+        color: '#555',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    buttonContainer: {
+        width: '100%',
+        marginVertical: 10,
     },
 });

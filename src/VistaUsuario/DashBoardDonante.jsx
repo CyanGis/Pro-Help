@@ -76,31 +76,23 @@ const plantillas = [
 
 export default function DashBoardDonante() {
     const [campaigns, setCampaigns] = useState([]);
-    const [expanded, setExpanded] = useState({});  // State to manage expanded descriptions
+    const [expanded, setExpanded] = useState({});
     const isFocused = useIsFocused();
     const navigation = useNavigation();
 
     const getData = async () => {
         try {
-            const value = await AsyncStorage.getItem('token');
-            if (value !== null) {
-                const profile = await UserService.getYourProfile(value);
-                try {
-                    const campaings = await UserService.getAllCampaigns(value);
-                    setCampaigns(campaings);
-                    console.log(campaings[0])
-                } catch (error) {
-                    console.error("Error al obtener campañas: ", error);
-                }
-            }
+            const campaigns = await UserService.getAllCampaigns();
+            setCampaigns(campaigns); 
         } catch (error) {
-            console.error("Error al obtener el dato: ", error);
+            console.error("Error al obtener campañas:", error); 
         }
     };
 
     useEffect(() => {
         getData();
-    }, [isFocused]);
+    }, [isFocused]); 
+
 
     const handleToggleDescription = (id) => {
         setExpanded(prev => ({
@@ -114,7 +106,7 @@ export default function DashBoardDonante() {
         if (plantilla) {
             return (
                 <TouchableOpacity onPress={() =>
-                    navigation.navigate('ViewCampaign', {item})
+                    navigation.navigate('ViewCampaign', { item })
                 }>
                     {plantilla.componente({
                         titulo: item.nombre,
