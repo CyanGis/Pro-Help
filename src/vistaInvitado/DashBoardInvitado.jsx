@@ -93,7 +93,7 @@ export default function DashBoardInvitado() {
         const plantilla = plantillas.find(p => p.codigo === item.templateEntity?.codigo);
         if (plantilla) {
             return (
-                <TouchableOpacity onPress={() => handleCampaignPress(item)}>
+                <TouchableOpacity onPress={() => navigation.navigate('ViewCampaignInvitado', { item })}>
                     {plantilla.componente({
                         titulo: item.nombre,
                         descripcion: item.descripcion,

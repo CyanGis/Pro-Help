@@ -9,8 +9,7 @@ import ResetPassword from '../modules/auth/screens/ResetPassword';
 import DrawerInvitado from '../Drawers/DrawerInvitado';
 import DrawerDonante from '../Drawers/DrawerDonante';
 import ViewCampaign from '../modules/auth/screens/ViewCampaign';
-import ViewCampaingStack from './stack/ViewCampaingStack';
-import DashBoardInvitado from '../vistaInvitado/DashBoardInvitado';
+import ViewCampaignInvitado from "../vistaInvitado/ViewCampaignInvitado"
 
 const Stack = createStackNavigator();
 
@@ -26,6 +25,7 @@ export default function Navigation() {
         <Stack.Screen name="DashBoardInvitado" component={DrawerInvitado} />
         <Stack.Screen name="DashBoardDonante" component={DrawerDonante} />
         <Stack.Screen name="ViewCampaign" component={ViewCampaign} />
+        <Stack.Screen name="ViewCampaignInvitado" component={ViewCampaignInvitado} />
     </Stack.Navigator>
     </NavigationContainer>
   );
