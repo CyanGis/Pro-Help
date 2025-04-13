@@ -30,7 +30,7 @@ const ChatScreen = () => {
     if (!email) return;
     const fetchContacts = async () => {
       try {
-        const response = await axios.get(`http://192.168.100.184:8080/api/${email}/contacts`);
+        const response = await axios.get(`http://192.168.0.3:8080/api/${email}/contacts`);
         console.log('Contactos:', response.data);
         setContacts(response.data || []);
       } catch (error) {

@@ -67,7 +67,7 @@ export default function Login({ navigation }) {
     const saveData = async (data) => {
         try {//recibe data y la guarda en el async storage
             await AsyncStorage.setItem('token', data);//guarda el token en el async storage
-            console.log('Data saved successfully');
+            console.log('Data saved successfully', data);
         } catch (e) {
             console.log('Failed to save data:', e);
         }

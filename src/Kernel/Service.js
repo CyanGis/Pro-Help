@@ -1,7 +1,7 @@
 import axios from "axios";
 
 class UserService {
-    static BASE_URL = "http://192.168.100.184:8080"
+    static BASE_URL = "http://192.168.0.3:8080"
 
     static async login(email, password) {
         try {
@@ -59,10 +59,16 @@ class UserService {
     }
 
     static async getAllCampaigns() {
+        const token = localStorage.getItem('token')
+        console.log("Token:", token)
         try {
             console.log("Obteniendo campañas...");
-            const response = await axios.get(`${UserService.BASE_URL}/api/campaign`);
-            console.log("Respuesta de campañas:", response.data);
+            const response = await axios.get(`${BASE_URL}/api/campaign/`, {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+              });
             return response.data.data;
         } catch (err) {
             console.error("Error al obtener campañas:", err);

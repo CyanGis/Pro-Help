@@ -13,7 +13,7 @@ const firebaseConfig = {
   projectId: 'josle5e',
   storageBucket: 'josle5e.firebasestorage.app',
   messagingSenderId: '143574372151',
-  appId: '1:143574372151:web:3c26be32fe62bcc8b6d4b2',
+  appId: "1:143574372151:web:3c26be32fe62bcc8b6d4b2",
 };
 
 // Inicializar Firebase

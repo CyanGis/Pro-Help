@@ -65,7 +65,7 @@ export default function CreateAccount({ navigation }) {
             };
 
             const response = await axios.post(
-                'http://192.168.100.184:8080/api/auth/register',
+                'http://192.168.0.3:8080/api/auth/register',
                 userData,
                 {
                     headers: {
