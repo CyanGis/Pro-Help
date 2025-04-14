@@ -4,7 +4,6 @@ import { Image, Input, Button, Icon } from "@rneui/base";
 import { Picker } from '@react-native-picker/picker';
 import { isEmpty } from "lodash";
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function CreateAccount({ navigation }) {
     const [showPassword, setShowPassword] = useState(true);
@@ -74,13 +73,11 @@ export default function CreateAccount({ navigation }) {
                 }
             );
 
-            if (response.status === 200) {
-                // Si el registro es exitoso
+            if (response.status >= 200 && response.status < 300) {
                 Alert.alert('¡Éxito!', 'Tu cuenta ha sido creada correctamente.', [
                     { text: 'OK', onPress: () => navigation.navigate('DashBoardDonante') }
                 ]);
             } else {
-                // Si hay algún error en el backend
                 Alert.alert('Error', 'Hubo un problema al registrar tu cuenta, por favor intenta nuevamente.');
             }
 
@@ -129,7 +126,6 @@ export default function CreateAccount({ navigation }) {
                             style={styles.picker}
                             onValueChange={(itemValue) => setSex(itemValue)}
                         >
-                            <Picker.Item label="Selecciona tu sexo" value="" />
                             <Picker.Item label="Masculino" value="H" />
                             <Picker.Item label="Femenino" value="M" />
                             <Picker.Item label="Otro" value="O" />
@@ -157,7 +153,7 @@ export default function CreateAccount({ navigation }) {
                     <Input
                         placeholder="Correo Electrónico"
                         label="Correo Electrónico:"
-                        keyboardType="email-direccion"
+                        keyboardType="email-address" // CORREGIDO
                         inputContainerStyle={styles.inputContainer}
                         inputStyle={styles.input}
                         onChange={({ nativeEvent: { text } }) => setEmail(text)}
@@ -167,7 +163,13 @@ export default function CreateAccount({ navigation }) {
                         placeholder="Contraseña"
                         label="Contraseña:"
                         secureTextEntry={showPassword}
-                        rightIcon={<Icon name={showPassword ? "eye" : "eye-off"} type="material-community" onPress={() => setShowPassword(!showPassword)} />}
+                        rightIcon={
+                            <Icon
+                                name={showPassword ? "eye" : "eye-off"}
+                                type="material-community"
+                                onPress={() => setShowPassword(!showPassword)}
+                            />
+                        }
                         inputContainerStyle={styles.inputContainer}
                         inputStyle={styles.input}
                         onChange={({ nativeEvent: { text } }) => setPassword(text)}
@@ -177,7 +179,13 @@ export default function CreateAccount({ navigation }) {
                         placeholder="Confirmar Contraseña"
                         label="Confirmar Contraseña:"
                         secureTextEntry={showPassword2}
-                        rightIcon={<Icon name={showPassword2 ? "eye" : "eye-off"} type="material-community" onPress={() => setShowPassword2(!showPassword2)} />}
+                        rightIcon={
+                            <Icon
+                                name={showPassword2 ? "eye" : "eye-off"}
+                                type="material-community"
+                                onPress={() => setShowPassword2(!showPassword2)}
+                            />
+                        }
                         inputContainerStyle={styles.inputContainer}
                         inputStyle={styles.input}
                         onChange={({ nativeEvent: { text } }) => setConfirmPassword(text)}
@@ -209,39 +217,50 @@ const styles = StyleSheet.create({
     formContainer: {
         width: '90%',
         backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 20
+        borderRadius: 12,
+        padding: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 5
     },
     inputContainer: {
-        borderBottomWidth: 0
+        borderBottomWidth: 0,
+        marginBottom: 16
     },
     input: {
-        backgroundColor: '#f2f2f2',
-        paddingHorizontal: 10,
-        borderRadius: 8
+        backgroundColor: '#e9ecef',
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        borderRadius: 10,
+        fontSize: 16
     },
     pickerWrapper: {
-        marginBottom: 20
+        marginBottom: 16
     },
     picker: {
-        backgroundColor: '#f2f2f2',
-        borderRadius: 8,
-        marginTop: 5
+        backgroundColor: '#e9ecef',
+        borderRadius: 10,
+        paddingHorizontal: 10
     },
     label: {
         fontSize: 16,
-        fontWeight: 'bold',
-        marginBottom: 5
+        fontWeight: '600',
+        color: '#444',
+        marginBottom: 5,
+        marginRight: 5
     },
     errorText: {
-        color: 'red',
+        color: '#e63946',
         fontSize: 12,
         marginTop: 5
     },
     button: {
-        backgroundColor: '#397af8',
-        borderRadius: 8,
-        paddingVertical: 12,
-        marginTop: 10
+        backgroundColor: '#896447',
+        borderRadius: 10,
+        paddingVertical: 14,
+        marginTop: 20
     }
+    
 });

@@ -81,21 +81,14 @@ export default function DashBoard() {
 
     const getData = async () => {
         try {
-            const value = await AsyncStorage.getItem('token');
-            if (value !== null) {
-                const profile = await UserService.getYourProfile(value);
-                try {
-                    const campaings = await UserService.getAllCampaigns(value);
-                    setCampaigns(campaings);
-                    console.log(campaings[0])
-                } catch (error) {
-                    console.error("Error al obtener campañas: ", error);
-                }
-            }
+            const token = await AsyncStorage.getItem('token');
+            const campaings = await UserService.getAllCampaigns(token);  // token puede ser null y no pasa nada
+            setCampaigns(campaings);
         } catch (error) {
-            console.error("Error al obtener el dato: ", error);
+            console.error("Error al obtener campañas: ", error);
         }
     };
+    
 
     useEffect(() => {
         getData();

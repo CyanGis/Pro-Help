@@ -74,7 +74,7 @@ export default function PerfilDonante() {
       <View style={styles.profileHeader}>
         <Image source={{ uri: 'https://i.pravatar.cc/150' }} style={styles.profilePic} />
         <Text style={styles.userName}>{nombre} {apellido}</Text>
-        <Text style={styles.userRole}>{role === "USER" ? "Donante" : "Administrador"}</Text>
+        <Text style={styles.userRole}>{role === "USER" ? "USER" : "Administrador"}</Text>
       </View>
 
       <View style={styles.infoContainer}>

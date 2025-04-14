@@ -58,24 +58,32 @@ class UserService {
         }
     }
 
-    static async getAllCampaigns() {
-        const token = localStorage.getItem('token')
-        console.log("Token:", token)
+    static async getAllCampaigns(token) {
+        console.log("Token:", token);
         try {
             console.log("Obteniendo campañas...");
-            const response = await axios.get(`${BASE_URL}/api/campaign/`, {
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${token}`,
-                },
-              });
+            const headers = {
+                "Content-Type": "application/json",
+            };
+    
+            // Solo agregar el token si existe
+            if (token) {
+                headers.Authorization = `Bearer ${token}`;
+            }
+    
+            const response = await axios.get(
+                `${UserService.BASE_URL}/api/campaign/`,
+                { headers }
+            );
+    
+            console.log("Respuesta de campañas:", response.data);
             return response.data.data;
         } catch (err) {
             console.error("Error al obtener campañas:", err);
             throw err;
         }
     }
-
+    
 
     static async getUserById(userId, token) {
         try {
@@ -114,15 +122,15 @@ class UserService {
         }
     }
     
-    static async getAllCampaigns(token = null) {
-        try {
-            const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
-            const response = await axios.get(`${UserService.BASE_URL}/api/campaign`, config);
-            return response.data.data;
-        } catch (err) {
-            throw err;
-        }
-    }
+    // static async getAllCampaigns(token = null) {
+    //     try {
+    //         const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+    //         const response = await axios.get(`${UserService.BASE_URL}/api/campaign/`, config);
+    //         return response.data.data;
+    //     } catch (err) {
+    //         throw err;
+    //     }
+    // }
 
     static async getFirebaseToken(jwt, password) {
         const response = await fetch(`${UserService.BASE_URL}/api/auth/firebase-token`, {

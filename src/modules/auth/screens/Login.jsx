@@ -1,23 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Alert,
+    KeyboardAvoidingView,
+    Platform
+} from 'react-native';
 import { Image, Input, Button, Icon } from "@rneui/base";
 import UserService from "../../../Kernel/Service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { authInstance } from "../../../Kernel/firebase.config";
+
 export default function Login({ navigation }) {
     const [showPassword, setShowPassword] = useState(true);
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState({ email: "", password: "" });
 
-    {/* Guardar los datos dentro del async storage */ }
     useEffect(() => {
         (async () => {
             await AsyncStorage.removeItem("token");
         })();
     }, []);
-    
+
     const validateEmail = (email) => {
         const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return regex.test(email);
@@ -34,157 +42,162 @@ export default function Login({ navigation }) {
             });
             return;
         }
+
         if (!validateEmail(formattedEmail)) {
             setError({ email: "Ingresa un correo válido", password: "" });
             return;
         }
+
         try {
             const data = await UserService.login(formattedEmail, formattedPassword);
 
             if (data.token) {
-                saveData(data.token);
+                await AsyncStorage.setItem('token', data.token);
                 const firebaseTokenData = await UserService.getFirebaseToken(data.token, formattedPassword);
 
                 if (firebaseTokenData.firebaseToken) {
                     await signInWithEmailAndPassword(authInstance, formattedEmail, formattedPassword);
                     console.log("Usuario autenticado con Firebase");
                 }
-            }
-            if (data.role === 'ADMIN') {
-                navigation.replace('DashBoard');
-            } else {
-                console.log("Usuario no es ADMIN");
-                // Alert.alert("Acceso Denegado", "Este usuario no tiene permisos de administrador.");
-                navigation.replace('DashBoardDonante');
-            }
 
+                navigation.replace(data.role === 'ADMIN' ? 'DashBoard' : 'DashBoardDonante');
+            }
         } catch (err) {
             console.error("Error durante el login: ", err);
-            setError({ email: "", password: "Error en el inicio de sesión" });
+            setError({ email: "", password: "Credenciales incorrectas" });
         }
     };
-
-    const saveData = async (data) => {
-        try {//recibe data y la guarda en el async storage
-            await AsyncStorage.setItem('token', data);//guarda el token en el async storage
-            console.log('Data saved successfully', data);
-        } catch (e) {
-            console.log('Failed to save data:', e);
-        }
-    };
-
 
     return (
-        <View style={styles.container}>
-            <Image source={require('../../../../assets/logoDrawer.png')} style={styles.logo} />
-            <View style={styles.formContainer}>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+            <View style={styles.logoContainer}>
+                <Image
+                    source={require('../../../../assets/logoDrawer.png')}
+                    style={styles.logo}
+                    resizeMode="contain"
+                />
+            </View>
+
+            <View style={styles.card}>
+                <Text style={styles.title}>¡Bienvenido!</Text>
+
                 <Input
                     placeholder="Correo electrónico"
-                    label="Correo Electrónico"
-                    keyboardType="email-address"
-                    autoCapitalize="none"
+                    leftIcon={{ type: 'material', name: 'email' }}
                     inputContainerStyle={styles.inputContainer}
                     inputStyle={styles.input}
-                    onChange={({ nativeEvent: { text } }) => setEmail(text)}
+                    value={email}
+                    onChangeText={setEmail}
                     errorMessage={error.email}
                 />
+
                 <Input
                     placeholder="Contraseña"
-                    label="Contraseña"
                     secureTextEntry={showPassword}
-                    inputContainerStyle={styles.inputContainer}
-                    inputStyle={styles.input}
+                    leftIcon={{ type: 'material', name: 'lock' }}
                     rightIcon={
                         <Icon
-                            name={showPassword ? "eye" : "eye-off"}
-                            type="material-community"
+                            name={showPassword ? "visibility" : "visibility-off"}
+                            type="material"
                             onPress={() => setShowPassword(!showPassword)}
                         />
                     }
-                    onChange={({ nativeEvent: { text } }) => setPassword(text)}
+                    inputContainerStyle={styles.inputContainer}
+                    inputStyle={styles.input}
+                    value={password}
+                    onChangeText={setPassword}
                     errorMessage={error.password}
                 />
+
                 <Button
                     title="Iniciar Sesión"
-                    buttonStyle={styles.button}
+                    buttonStyle={styles.loginButton}
+                    titleStyle={{ fontWeight: 'bold' }}
                     onPress={handleLogin}
                 />
-                {/* <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
-                    <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
-                </TouchableOpacity> */}
+
                 <TouchableOpacity onPress={() => navigation.navigate('CreateAccount')}>
                     <Text style={styles.registerText}>
-                        ¿Aún no tienes una cuenta? <Text style={styles.registerLink}>Regístrate</Text>
+                        ¿No tienes cuenta? <Text style={styles.registerLink}>Regístrate</Text>
                     </Text>
                 </TouchableOpacity>
+
                 <Button
                     title="Ingresar como Invitado"
-                    buttonStyle={[styles.button, styles.guestButton]}
+                    type="outline"
+                    buttonStyle={styles.guestButton}
+                    titleStyle={{ color: '#896447' }}
                     onPress={() => navigation.replace('DashBoardInvitado')}
                 />
             </View>
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
         backgroundColor: '#AFCCD0',
-        paddingHorizontal: 20
+        justifyContent: 'center',
+        padding: 20
+    },
+    logoContainer: {
+        alignItems: 'center',
+        marginBottom: 20,
     },
     logo: {
-        width: 200,
-        height: 100,
-        marginBottom: 20
+        width: 180,
+        height: 80,
     },
-    formContainer: {
-        width: '100%',
+    card: {
         backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 20,
-        elevation: 5,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
+        borderRadius: 20,
+        padding: 25,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
-        shadowRadius: 4
+        shadowRadius: 5,
+        elevation: 10,
+    },
+    title: {
+        fontSize: 24,
+        fontWeight: '700',
+        textAlign: 'center',
+        marginBottom: 15,
+        color: '#333',
     },
     inputContainer: {
-        width: '100%',
+        borderBottomWidth: 0,
         backgroundColor: '#f2f2f2',
-        borderRadius: 8,
+        borderRadius: 10,
         paddingHorizontal: 10,
-        paddingVertical: 5,
-        marginVertical: 8
+        marginBottom: 10,
     },
     input: {
-        color: '#000'
+        color: '#333',
     },
-    button: {
-        borderRadius: 8,
+    loginButton: {
         backgroundColor: '#896447',
+        borderRadius: 10,
+        paddingVertical: 12,
         marginVertical: 10,
-        paddingVertical: 12
-    },
-    guestButton: {
-        backgroundColor: '#896447'
-    },
-    forgotPasswordText: {
-        marginTop: 16,
-        textAlign: 'center',
-        color: '#1E88E5',
-        textDecorationLine: 'underline'
     },
     registerText: {
-        marginTop: 16,
         textAlign: 'center',
-        color: '#000',
-        marginBottom: 16
+        marginTop: 10,
+        color: '#333',
     },
     registerLink: {
-        color: '#1E88E5',
-        textDecorationLine: 'underline'
+        color: '#896447',
+        fontWeight: '600',
+    },
+    guestButton: {
+        borderColor: '#896447',
+        borderRadius: 10,
+        marginTop: 10,
+        paddingVertical: 12,
     }
 });

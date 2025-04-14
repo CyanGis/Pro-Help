@@ -82,10 +82,19 @@ export default function DashBoardDonante() {
 
     const getData = async () => {
         try {
-            const campaigns = await UserService.getAllCampaigns();
-            setCampaigns(campaigns); 
+            const value = await AsyncStorage.getItem('token');
+            if (value !== null) {
+                const profile = await UserService.getYourProfile(value);
+                try {
+                    const campaings = await UserService.getAllCampaigns(value);
+                    setCampaigns(campaings);
+                    console.log(campaings[0])
+                } catch (error) {
+                    console.error("Error al obtener campañas: ", error);
+                }
+            }
         } catch (error) {
-            console.error("Error al obtener campañas:", error); 
+            console.error("Error al obtener el dato: ", error);
         }
     };
 

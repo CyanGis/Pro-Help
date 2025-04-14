@@ -3,7 +3,8 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "
 import { StyleSheet, Text, View, Image } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons"; // Importar iconos de Expo
 import DashBoardInvitado from "../vistaInvitado/DashBoardInvitado";
-import CreacteAccount from '../modules/auth/screens/CreacteAccount'
+import CreateAccount from '../modules/auth/screens/CreateAccount'
+
 import DashBoard from "../modules/auth/screens/DashBoard";
 
 const logoDrawer = require("../../assets/logoDrawer.png");
@@ -54,7 +55,7 @@ export default function DrawerInvitado() {
       />
       <Drawer.Screen
         name="Crear Cuenta"
-        component={CreacteAccount}
+        component={CreateAccount}
         options={{
           drawerIcon: ({ color, size }) => <MaterialIcons name="person-add" size={size} color={color} />,
         }}

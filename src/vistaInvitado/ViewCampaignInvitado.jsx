@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, Modal, Button } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { ProgressBar } from 'react-native-paper';
 
 const imagenes = {
     '/img-camp/img-1.png': require("../../assets/img-camp/img-1.png"),
@@ -16,6 +17,8 @@ const imagenes = {
 };
 
 export default function ViewCampaignInvitado({ route }) {
+    const [totalDonations, setTotalDonations] = useState(0);
+    const [progress, setProgress] = useState(0);
     const [modalVisible, setModalVisible] = useState(false);
     const navigation = useNavigation();
 
@@ -26,11 +29,12 @@ export default function ViewCampaignInvitado({ route }) {
         image: imagen,
         categoria,
         recursoTipo: recurso,
-        direccion,
         fechaInicio,
         fechaFin,
         progreso
     } = item;
+    const direccion = item.location.address;
+    
 
     const handleCreateAccount = () => {
         navigation.navigate('CreateAccount');
