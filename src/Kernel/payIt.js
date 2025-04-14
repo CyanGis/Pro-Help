@@ -5,32 +5,47 @@ const BASE_URL = "http://192.168.1.80:3002";
 const donationService = {
     payTo: async (pago) => {
         try {
-            const response = await axios.post(`${BASE_URL}/create-order`, pago);
-            console.log("Respuesta de la orden:", response.data);
-
-            if (response.data.status === 'CREATED' && response.data.links) {
-                const approvalUrl = response.data.links.find(link => link.rel === "approve")?.href;
-                if (approvalUrl) {
-                    // Usar Linking para abrir el navegador en React Native
-                    const canOpen = await Linking.canOpenURL(approvalUrl);
-                    if (canOpen) {
-                        await Linking.openURL(approvalUrl);
-                    } else {
-                        console.error("No se puede abrir la URL:", approvalUrl);
-                        throw new Error("No se puede abrir el enlace de pago");
-                    }
-                } else {
-                    console.error("No se encontró un link de aprobación en la respuesta.");
-                    throw new Error("Link de aprobación no encontrado");
+            console.log("Enviando pago al servidor:", pago);
+            const response = await axios.post(`${BASE_URL}/create-order`, pago, {
+                headers: {
+                    'Content-Type': 'application/json'
                 }
+            });
+    
+            console.log("Respuesta completa del servidor:", response);
+    
+            if (response.data.links) {
+                const approvalUrl = response.data.links.find(
+                    link => link.rel === "approve" && link.method === "GET"
+                )?.href;
+                
+                if (!approvalUrl) {
+                    throw new Error("No se encontró URL de aprobación en la respuesta");
+                }
+    
+                // Verifica que la URL sea válida
+                if (!approvalUrl.startsWith('https://www.sandbox.paypal.com/')) {
+                    throw new Error(`URL de PayPal inválida: ${approvalUrl}`);
+                }
+    
+                const canOpen = await Linking.canOpenURL(approvalUrl);
+                if (!canOpen) {
+                    throw new Error("No se puede abrir la URL de PayPal");
+                }
+    
+                await Linking.openURL(approvalUrl);
+                return { success: true, url: approvalUrl };
+                
             } else {
-                console.error("La orden no fue creada correctamente.");
-                throw new Error("Orden no creada correctamente");
+                throw new Error("Respuesta inesperada del servidor");
             }
-
         } catch (error) {
-            console.error("Error al procesar el pago:", error.response?.data || error.message);
-            throw error; // Relanzar el error para manejarlo en el componente
+            console.error("Error detallado en payTo:", {
+                message: error.message,
+                response: error.response?.data,
+                request: error.config
+            });
+            throw new Error(error.response?.data?.message || "Error al procesar el pago");
         }
     },
     capturePayment: async (token) => {
