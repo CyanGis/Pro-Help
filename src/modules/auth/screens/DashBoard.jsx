@@ -4,6 +4,7 @@ import { useIsFocused, useNavigation } from '@react-navigation/native';
 import UserService from '../../../Kernel/Service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 const imagenes = {
     '/img-camp/img-1.png': require("../../../../assets/img-camp/img-1.png"),
     '/img-camp/img-2.png': require("../../../../assets/img-camp/img-2.png"),
@@ -79,6 +80,9 @@ export default function DashBoard() {
     const isFocused = useIsFocused();
     const navigation = useNavigation();
 
+    //realizar donarion
+ 
+
     const getData = async () => {
         try {
             const token = await AsyncStorage.getItem('token');
@@ -134,7 +138,7 @@ export default function DashBoard() {
             ) : (
                 <FlatList
                     showsHorizontalScrollIndicator={false}
-                    data={campaigns}
+                    data={campaigns.filter(campaign => campaign.estado === true)}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={renderItem}
                 />
