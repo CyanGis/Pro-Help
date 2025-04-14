@@ -1,12 +1,16 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 class UserService {
-    static BASE_URL = "http://192.168.0.3:8080"
+    static BASE_URL = "http://192.168.1.80:8080"
 
     static async login(email, password) {
         try {
             const response = await axios.post(`${UserService.BASE_URL}/api/auth/login`, { email, password });
+            console.log("Response Login ",response.data.token);
+            AsyncStorage.setItem('tokenCampaign', response.data.token);
             return response.data;
+            
 
         } catch (err) {
             console.error("Error al hacer login:", err);
@@ -59,9 +63,9 @@ class UserService {
     }
 
     static async getAllCampaigns(token) {
-        console.log("Token:", token);
+        
         try {
-            console.log("Obteniendo campañas...");
+            
             const headers = {
                 "Content-Type": "application/json",
             };
@@ -72,11 +76,11 @@ class UserService {
             }
     
             const response = await axios.get(
-                `${UserService.BASE_URL}/api/campaign/`,
+                `${UserService.BASE_URL}/api/campaign/getAll`,
                 { headers }
             );
-    
-            console.log("Respuesta de campañas:", response.data);
+            //console.log("Response getAllCampaigns ",response.data.data);
+            
             return response.data.data;
         } catch (err) {
             console.error("Error al obtener campañas:", err);
