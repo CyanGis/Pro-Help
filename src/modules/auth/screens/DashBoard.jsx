@@ -86,7 +86,7 @@ export default function DashBoard() {
     useFocusEffect(
         useCallback(()=>{
             getData();
-        },[])
+        },[getData])
     );
 
     const getData = async () => {
