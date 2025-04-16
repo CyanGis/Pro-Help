@@ -139,15 +139,15 @@ export default function ViewCampaign({ route }) {
                     phone: profile.phone,
                     name: profile.name,
                     currency_code: 'USD',
-                    token: token, 
+                    token: token,
                 }
                 console.log("Payload a enviar:", nuevoPago);
                 try {
                     const donate = await payIt.payTo(nuevoPago);
                 } catch (error) {
 
-                }finally{
-                    
+                } finally {
+
                 }
 
             }
@@ -182,35 +182,41 @@ export default function ViewCampaign({ route }) {
             const token = await AsyncStorage.getItem('token');
             let url;
             let response;
+            let newTotal = 0;
 
             if (recurso === "insumo") {
                 url = `http://192.168.1.80:8080/api/donations/total-insumos/${id}`;
                 response = await axios.get(url, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-
-
-                setTotalDonations(response.data);
+                newTotal = response.data;
             } else {
                 url = `http://192.168.1.80:8080/api/donations/campaign/${id}`;
                 response = await axios.get(url, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
-
-                const total = response.data.reduce((sum, donation) => sum + parseFloat(donation.amount), 0);
-                setTotalDonations(total);
+                newTotal = response.data.reduce((sum, donation) => sum + parseFloat(donation.amount), 0);
             }
 
-            // Calcular progreso
-            const cantidadNumerica = parseFloat(meta.replace(/,/g, ''));
-            const newProgress = (totalDonations / cantidadNumerica) * 100;
-            setProgress(Math.min(newProgress, 100));
+            // Calcular progreso con los valores recién obtenidos
+            const cantidadNumerica = typeof meta === 'string'
+                ? parseFloat(meta.replace(/[^0-9.]/g, ''))
+                : meta;
+            const calculatedProgress = (newTotal / cantidadNumerica);
+
+            // Actualizar ambos estados juntos
+            setTotalDonations(newTotal);
+            setProgress(calculatedProgress);
 
         } catch (error) {
             console.error("Error al obtener donaciones:", error);
         } finally {
             setLoading(false);
         }
+
+        console.log('Total donaciones:', newTotal);
+        console.log('Meta:', cantidadNumerica);
+        console.log('Progreso calculado:', calculatedProgress);
     };
 
     useEffect(() => {
