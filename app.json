@@ -7,35 +7,66 @@
     "icon": "./assets/logo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "scheme": "prohelp",
     "splash": {
-      "image": "./assets/logo.png", 
+      "image": "./assets/logo.png",
       "resizeMode": "contain",
-      "backgroundColor": "#AFCCD0" 
+      "backgroundColor": "#AFCCD0"
     },
     "ios": {
       "supportsTablet": true,
+      "bundleIdentifier": "com.tuusuario.prohelp",
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "prohelp"
+            ]
+          }
+        ]
+      },
       "config": {
-        "googleMapsApiKey":  "AIzaSyDhvf0QyLNdpG6YKFyZo56nm0KhkMf_O3U"
-        }
+        "googleMapsApiKey": "AIzaSyDhvf0QyLNdpG6YKFyZo56nm0KhkMf_O3U"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "package": "com.tuusuario.prohelp",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "prohelp",
+              "host": "paypal-return",
+              "pathPrefix": "/"
+            }
+          ],
+          "category": [
+            "BROWSABLE",
+            "DEFAULT"
+          ]
+        }
+      ],
       "config": {
         "googleMaps": {
-          "apiKey": "process.env.GOOGLE_MAPS_API_KEY" 
+          "apiKey": "process.env.GOOGLE_MAPS_API_KEY"
         }
-      }
+      },
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "config": {
-        "googleMaps": {
-          "apiKey": "process.env.GOOGLE_MAPS_API_KEY" 
-        }
+      "googleMaps": {
+        "apiKey": "process.env.GOOGLE_MAPS_API_KEY"
       }
     },
     "plugins": [
@@ -45,5 +76,11 @@
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "f49619ce-40ff-4625-b08d-a1f3c3a8bed8"
+      }
+    }
   }
+}

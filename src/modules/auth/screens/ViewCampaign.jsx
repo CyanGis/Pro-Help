@@ -47,39 +47,39 @@ export default function ViewCampaign({ route }) {
         }));
     };
 
-    const getProfile = async () =>{
+    const getProfile = async () => {
         const token = await AsyncStorage.getItem("tokenCampaign");
         console.log("Token:", token);
         if (token) {
-        try {
-            const response = await axios.get("http://192.168.1.80:8080/api/adminuser/get-profile",
-                {
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}}`,
-                    },
-                }
-            )
-            setProfile(response.data.user);
-            AsyncStorage.setItem("profileInfo", JSON.stringify(response.data.user));
-            console.log("Perfil obtenido:", response.data.user);
-            return response.data.user;
-        } catch (error) {
-            console.error("Error al obtener el perfil:", error);
+            try {
+                const response = await axios.get("http://192.168.1.80:8080/api/adminuser/get-profile",
+                    {
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${token}}`,
+                        },
+                    }
+                )
+                setProfile(response.data.user);
+                AsyncStorage.setItem("profileInfo", JSON.stringify(response.data.user));
+                console.log("Perfil obtenido:", response.data.user);
+                return response.data.user;
+            } catch (error) {
+                console.error("Error al obtener el perfil:", error);
+            }
+        } else {
+            console.log("Token no encontrado");
         }
-    }else{
-        console.log("Token no encontrado");   
     }
-    }
-    
-    useEffect(()=>{
-        
+
+    useEffect(() => {
+
         getProfile();
-    },[]);
-        
+    }, []);
+
     const handleDonationSubmit = async () => {
         setIsOpen(false);
-    
+
         try {
             if (recurso === "insumo") {
                 // Convertir a formato que espera el backend
@@ -89,11 +89,11 @@ export default function ViewCampaign({ route }) {
                         nombre,  // Mantener en español si es lo que espera el backend
                         cantidad: parseInt(cantidad)  // Asegurar que es número
                     }));
-    
-          
-    
+
+
+
                 const token = await AsyncStorage.getItem('token');
-                
+
                 console.log("Payload a enviar:", {
                     campaignId: id,
                     donaciones: articulosDonados,  // Usar 'donaciones' en lugar de 'donations'
@@ -103,7 +103,7 @@ export default function ViewCampaign({ route }) {
                     phone: profile.phone,
                     recurso: "insumo"
                 });
-    
+
                 const response = await axios.post(
                     'http://192.168.1.80:8080/api/pre-donation/pre-donate',
                     {
@@ -123,35 +123,43 @@ export default function ViewCampaign({ route }) {
                         }
                     }
                 );
-                
+
                 console.log("Respuesta completa:", response);
-                
-              
-                
+
+
+
                 fetchDonations();
             } else {
-                const pago = {
-                    idUsuario: profile.id,
+                const token = await AsyncStorage.getItem('token');
+                const nuevoPago = {
+                    campaignId: id,
                     amount: parseFloat(donationAmount),
+                    donorId: profile.id,
+                    email: profile.email,
+                    phone: profile.phone,
+                    name: profile.name,
                     currency_code: 'USD',
-                    idCampaign: id,
+                    token: token, 
                 }
+                console.log("Payload a enviar:", nuevoPago);
                 try {
-                    const donate = await payIt.payTo(pago);
+                    const donate = await payIt.payTo(nuevoPago);
                 } catch (error) {
+
+                }finally{
                     
                 }
-                
+
             }
         } catch (error) {
             console.error("Error completo:", error);
             console.error("Datos del error:", error.response?.data);
-        }finally{
+        } finally {
             setSelectedArticulos({});
             setDonationAmount('');
         }
     };
-    
+
     const { item } = route.params;
     const {
         nombre: titulo,

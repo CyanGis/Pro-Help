@@ -11,9 +11,9 @@ import ViewCampaignInvitado from "../vistaInvitado/ViewCampaignInvitado"
 
 const Stack = createStackNavigator();
 
-export default function Navigation() {
+export default function Navigation({linking}) {
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={linking}>
     <Stack.Navigator initialRouteName="Login" screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="CreateAccount" component={CreateAccount} />

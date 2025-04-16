@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import UserService from '../../../Kernel/Service';
@@ -82,6 +83,11 @@ export default function DashBoard() {
 
     //realizar donarion
  
+    useFocusEffect(
+        useCallback(()=>{
+            getData();
+        },[])
+    );
 
     const getData = async () => {
         try {
