@@ -69,6 +69,33 @@ export default function PerfilDonante() {
     getData();
   }, [isFocused]);
 
+    const handleUpdateProfile = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        const storedProfile = await AsyncStorage.getItem("profile");
+        const parsedProfile = JSON.parse(storedProfile);
+        const userId = parsedProfile.user.id; // o profile.id dependiendo del formato
+    
+        const updatedUser = {
+          name: nombre,
+          lastName: apellido,
+          email: email,
+          phone: telefono,
+          direccion: direccion,
+          sexo: sexo,
+          role: role, // lo puedes mantener igual
+          password: "" // para que no se actualice
+        };
+    
+        const response = await UserService.updateUser(userId, updatedUser, token);
+        console.log("Respuesta del backend:", response);
+        setModalEditar(false);
+        await getData(); // refresca los datos del perfil
+      } catch (error) {
+        console.error("Error al actualizar el perfil:", error);
+      }
+    };
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.profileHeader}>
@@ -140,13 +167,13 @@ export default function PerfilDonante() {
               />
             </View>
 
-            <TextInput
+            {/* <TextInput
               style={styles.input}
               value={email}
               onChangeText={setEmail}
               placeholder="Email"
               keyboardType="email-address"
-            />
+            /> */}
             <TextInput
               style={styles.input}
               value={telefono}
@@ -165,7 +192,7 @@ export default function PerfilDonante() {
               <TouchableOpacity style={styles.closeButton} onPress={() => setModalEditar(false)}>
                 <Text style={styles.closeButtonText}>Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.saveButton} onPress={() => setModalEditar(false)}>
+              <TouchableOpacity style={styles.saveButton} onPress={handleUpdateProfile}>
                 <Text style={styles.saveButtonText}>Guardar</Text>
               </TouchableOpacity>
             </View>

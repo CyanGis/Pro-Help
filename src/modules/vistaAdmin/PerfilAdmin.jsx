@@ -4,7 +4,7 @@ import { Icon } from '@rneui/base';
 import { useIsFocused } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import UserService from '../../Kernel/Service';
-
+import { API_URL } from '../../Kernel/config';
 export default function PerfilAdmin() {
   const [modalEditar, setModalEditar] = useState(false);
   const [modalPassword, setModalPassword] = useState(false);
@@ -68,6 +68,68 @@ export default function PerfilAdmin() {
   useEffect(() => {
     getData();
   }, [isFocused]);
+
+  const handleUpdateProfile = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      const storedProfile = await AsyncStorage.getItem("profile");
+      const parsedProfile = JSON.parse(storedProfile);
+      const userId = parsedProfile.user.id; // o profile.id dependiendo del formato
+  
+      const updatedUser = {
+        name: nombre,
+        lastName: apellido,
+        email: email,
+        phone: telefono,
+        direccion: direccion,
+        sexo: sexo,
+        role: role, // lo puedes mantener igual
+        password: "" // para que no se actualice
+      };
+  
+      const response = await UserService.updateUser(userId, updatedUser, token);
+      console.log("Respuesta del backend:", response);
+      setModalEditar(false);
+      await getData(); // refresca los datos del perfil
+    } catch (error) {
+      console.error("Error al actualizar el perfil:", error);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+  
+      const response = await fetch(`${API_URL}/change-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          email: email,
+          password: password,
+          newPassword: newPassword
+        })
+      });
+  
+      const data = await response.text();
+  
+      if (response.ok) {
+        alert("Contraseña actualizada exitosamente");
+        setPassword("");
+        setNewPassword("");
+        setModalPassword(false);
+      } else {
+        alert(data);
+      }
+    } catch (error) {
+      console.error("Error al cambiar la contraseña:", error);
+      alert("Ocurrió un error al intentar cambiar la contraseña");
+    }
+  };
+  
+  
 
   return (
     <ScrollView style={styles.container}>
@@ -139,14 +201,7 @@ export default function PerfilAdmin() {
                 placeholder="Apellido"
               />
             </View>
-
-            <TextInput
-              style={styles.input}
-              value={email}
-              onChangeText={setEmail}
-              placeholder="Email"
-              keyboardType="email-address"
-            />
+            
             <TextInput
               style={styles.input}
               value={telefono}
@@ -165,7 +220,7 @@ export default function PerfilAdmin() {
               <TouchableOpacity style={styles.closeButton} onPress={() => setModalEditar(false)}>
                 <Text style={styles.closeButtonText}>Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.saveButton} onPress={() => setModalEditar(false)}>
+              <TouchableOpacity style={styles.saveButton} onPress={handleUpdateProfile}>
                 <Text style={styles.saveButtonText}>Guardar</Text>
               </TouchableOpacity>
             </View>

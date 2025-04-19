@@ -143,7 +143,7 @@ export default function DashBoardDonante() {
             ) : (
                 <FlatList
                     showsHorizontalScrollIndicator={false}
-                    data={campaigns}
+                    data={campaigns.filter(campaign => campaign.estado === true)}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={renderItem}
                 />

@@ -4,6 +4,7 @@ import { Image, Input, Button, Icon } from "@rneui/base";
 import { Picker } from '@react-native-picker/picker';
 import { isEmpty } from "lodash";
 import axios from 'axios';
+import { API_URL } from "../../../Kernel/config";
 
 export default function CreateAccount({ navigation }) {
     const [showPassword, setShowPassword] = useState(true);
@@ -64,7 +65,7 @@ export default function CreateAccount({ navigation }) {
             };
 
             const response = await axios.post(
-                'http://192.168.0.3:8080/api/auth/register',
+                `${API_URL}/auth/register`,
                 userData,
                 {
                     headers: {

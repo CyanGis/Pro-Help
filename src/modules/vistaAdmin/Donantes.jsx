@@ -14,6 +14,7 @@ import {
 import { Icon } from '@rneui/base';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { API_URL } from '../../Kernel/config';
 
 const Donantes = () => {
   const [users, setUsers] = useState([]);
@@ -38,7 +39,7 @@ const Donantes = () => {
   const fetchDonations = async (userId) => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await axios.get(`http://192.168.1.80:8080/api/donations/donor/${userId}`, {
+      const response = await axios.get(`${API_URL}/donations/donor/${userId}`, {
         headers: {
           "Authorization": `Bearer ${token}`,
         }
@@ -55,7 +56,7 @@ const Donantes = () => {
     setLoading(true);
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await axios.get('http://192.168.1.80:8080/api/adminuser/get-all-users', {
+      const response = await axios.get(`${API_URL}/adminuser/get-all-users`, {
         headers: {
           "Authorization": `Bearer ${token}`,
         }
@@ -97,7 +98,7 @@ const Donantes = () => {
     try {
       const token = await AsyncStorage.getItem('token');
       await axios.patch(
-        `http://192.168.1.80:8080/api/admin/disable-user/${selectedUserId}`,
+        `${API_URL}/admin/disable-user/${selectedUserId}`,
         {},
         {
           headers: {
@@ -119,8 +120,10 @@ const Donantes = () => {
 
   // Filtrar usuarios por email
   const filteredUsers = users.filter(user =>
-    user.email.toLowerCase().includes(searchEmail.toLowerCase())
+    user.email.toLowerCase().includes(searchEmail.toLowerCase()) &&
+    (donationsData[user.id] || 0) > 0
   );
+  
 
   // Renderizar cada item de la lista
   const renderItem = ({ item }) => (
@@ -138,7 +141,9 @@ const Donantes = () => {
         <View style={styles.donationsContainer}>
           <Icon name="heart" type="material-community" size={20} color="#F44336" />
           <Text style={styles.donationsText}>
-            {loadingDonations ? 'Cargando...' : donationsData[item.id] || 0} donaciones
+            {loadingDonations
+              ? 'Cargando...'
+              : `${donationsData[item.id] || 0} ${donationsData[item.id] === 1 ? 'donación' : 'donaciones'}`}
           </Text>
         </View>
         

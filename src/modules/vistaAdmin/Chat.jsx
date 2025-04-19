@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { collection, query, orderBy, onSnapshot, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../Kernel/firebase.config';
 import { Ionicons } from '@expo/vector-icons';
+import { API_URL } from '../../Kernel/config';
 import { TouchableWithoutFeedback} from 'react-native';
 
 const ChatScreen = () => {
@@ -30,7 +31,7 @@ const ChatScreen = () => {
     if (!email) return;
     const fetchContacts = async () => {
       try {
-        const response = await axios.get(`http://192.168.0.3:8080/api/${email}/contacts`);
+        const response = await axios.get(`${API_URL}/${email}/contacts`);
         console.log('Contactos:', response.data);
         setContacts(response.data || []);
       } catch (error) {

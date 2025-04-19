@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { Linking } from 'react-native';
 
-const BASE_URL = "http://192.168.1.80:3002";
+const BASE_URL = "http://192.168.1.67:3002";
 
 const donationService = {
     payTo: async (pago) => {
@@ -48,7 +48,7 @@ const donationService = {
     fetchTransactionDetails: async (transactionId) =>  {
         if (transactionId) {
             try {
-                const response = await axios.get(`http://192.168.1.80:3002/transaction/${transactionId}`);
+                const response = await axios.get(`http://192.168.1.67:3002/transaction/${transactionId}`);
                 return response.data;
             } catch (error) {
                 console.error("Error obteniendo los detalles de la transacción:", error);
@@ -86,7 +86,7 @@ const donationService = {
               name: profile.name,     
           };
       
-          const response = await fetch("http://192.168.1.80:8080/api/donations", {
+          const response = await fetch("http://192.168.1.67:8080/api/donations", {
               method: "POST",
               headers: {
                   "Content-Type": "application/json",

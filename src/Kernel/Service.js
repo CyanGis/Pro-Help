@@ -1,8 +1,9 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
+
 class UserService {
-    static BASE_URL = "http://192.168.1.80:8080"
+    static BASE_URL = "http://192.168.1.67:8080"
 
     static async login(email, password) {
         try {
@@ -36,6 +37,28 @@ class UserService {
             throw err;
         }
     }
+    static async changePassword(email, currentPassword, newPassword, token) {
+        try {
+            const response = await axios.post(
+                `${UserService.BASE_URL}/api/change-password`,
+                {
+                    email: email,
+                    password: currentPassword,
+                    newPassword: newPassword,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error al cambiar la contraseña:", error);
+            throw error;
+        }
+    }
+    
 
     static async getAllUsers(token) {
         try {
@@ -76,7 +99,7 @@ class UserService {
             }
     
             const response = await axios.get(
-                `${UserService.BASE_URL}/api/campaign/getAll`,
+                `${UserService.BASE_URL}/api/campaign/`,
                 { headers }
             );
             //console.log("Response getAllCampaigns ",response.data.data);

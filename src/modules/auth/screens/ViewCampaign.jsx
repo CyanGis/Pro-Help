@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
 import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -10,6 +9,7 @@ import { ProgressBar } from 'react-native-paper';
 import { Modal } from 'react-native';
 import { TextInput } from 'react-native';
 import payIt from '../../../Kernel/payIt';
+import { API_URL } from '../../../Kernel/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -20,9 +20,10 @@ const imagenes = {
     '/img-camp/img-4.png': require("../../../../assets/img-camp/img-4.png"),
     '/img-camp/img-5.png': require("../../../../assets/img-camp/img-5.png"),
     '/img-camp/img-6.png': require("../../../../assets/img-camp/img-6.png"),
-    '/img-camp/img-7.png': require("../../../../assets/img-camp/img-7.jpg"),
-    '/img-camp/img-8.png': require("../../../../assets/img-camp/img-8.jpg"),
-    '/img-camp/img-9.png': require("../../../../assets/img-camp/img-9.jpg"),
+    '/img-camp/img-7.jpg': require("../../../../assets/img-camp/img-7.jpg"),
+    '/img-camp/img-8.jpg': require("../../../../assets/img-camp/img-8.jpg"),
+    '/img-camp/img-9.jpg': require("../../../../assets/img-camp/img-9.jpg"),
+    '/img-camp/voluntarios.jpg': require("../../../../assets/img-camp/voluntarios.jpg"),
 };
 
 export default function ViewCampaign({ route }) {
@@ -52,7 +53,7 @@ export default function ViewCampaign({ route }) {
         console.log("Token:", token);
         if (token) {
             try {
-                const response = await axios.get("http://192.168.1.80:8080/api/adminuser/get-profile",
+                const response = await axios.get(`${API_URL}/api/adminuser/get-profile`,
                     {
                         headers: {
                             "Content-Type": "application/json",
@@ -105,7 +106,7 @@ export default function ViewCampaign({ route }) {
                 });
 
                 const response = await axios.post(
-                    'http://192.168.1.80:8080/api/pre-donation/pre-donate',
+                    `${API_URL}/pre-donation/pre-donate`,
                     {
                         campaignId: id,
                         donaciones: articulosDonados,  // Nombre en español
@@ -125,8 +126,6 @@ export default function ViewCampaign({ route }) {
                 );
 
                 console.log("Respuesta completa:", response);
-
-
 
                 fetchDonations();
             } else {
@@ -164,7 +163,7 @@ export default function ViewCampaign({ route }) {
     const {
         nombre: titulo,
         descripcion,
-        image: imagen,
+        image: image,
         categoria,
         recursoTipo: recurso,
         fechaInicio,
@@ -185,13 +184,13 @@ export default function ViewCampaign({ route }) {
             let newTotal = 0;
 
             if (recurso === "insumo") {
-                url = `http://192.168.1.80:8080/api/donations/total-insumos/${id}`;
+                url = `${API_URL}/donations/total-insumos/${id}`;
                 response = await axios.get(url, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 newTotal = response.data;
             } else {
-                url = `http://192.168.1.80:8080/api/donations/campaign/${id}`;
+                url = `${API_URL}/donations/campaign/${id}`;
                 response = await axios.get(url, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
@@ -236,7 +235,7 @@ export default function ViewCampaign({ route }) {
 
             {/* Aquí el ScrollView */}
             <ScrollView contentContainerStyle={{ padding: 20 }}>
-                <Image source={imagenes[imagen]} style={styles.image} />
+                <Image source={imagenes[image]} style={styles.image} />
                 <Text style={styles.description}>Descripción: {descripcion}</Text>
                 <Text style={styles.category}>Categoría: {categoria}</Text>
                 <Text style={styles.resource}>Tipo: {recurso}</Text>

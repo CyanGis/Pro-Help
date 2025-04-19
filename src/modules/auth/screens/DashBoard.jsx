@@ -3,6 +3,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, Image, FlatList, TouchableOpacity } from 'react-native';
 import { useIsFocused, useNavigation } from '@react-navigation/native';
 import UserService from '../../../Kernel/Service';
+import { API_URL } from '../../../Kernel/config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
@@ -16,6 +17,7 @@ const imagenes = {
     '/img-camp/img-7.png': require("../../../../assets/img-camp/img-7.jpg"),
     '/img-camp/img-8.png': require("../../../../assets/img-camp/img-8.jpg"),
     '/img-camp/img-9.png': require("../../../../assets/img-camp/img-9.jpg"),
+    '/img-camp/voluntarios.jpg': require("../../../../assets/img-camp/voluntarios.jpg"),
 };
 
 const plantillas = [
